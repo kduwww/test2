@@ -44,7 +44,7 @@
             <div class="spectators-icon">
                 <i class="fa-solid fa-eye"></i>
             </div>
-            <div class="spectators-title">Spectators</div>
+            <div class="spectators-title">Invisible Players</div>
         </div>
         <div class="spectators-separator"></div>
         <div class="spectators-list" id="spectatorsList">
@@ -94,7 +94,7 @@
                 title: 'Miscellaneous',
                 items: [
                     { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
-                    { name: "Spectators List", action: "spectators_list", type: "toggle", checked: false, icon: '<i class="fa-solid fa-eye"></i>', desc: "Detect nearby invisible players and players above/below" },
+                    { name: "Invisible Detector", action: "spectators_list", type: "toggle", checked: false, icon: '<i class="fa-solid fa-eye"></i>', desc: "Detect nearby invisible players within 15m" },
                 ]
             },
                     wardrobe: {
@@ -435,9 +435,9 @@
             const spectatorsList = document.getElementById('spectatorsList');
             if (!spectatorsList) return;
 
-            // This will be populated by Lua with actual spectator data
+            // This will be populated by Lua with actual invisible player data
             // For now, show a loading message
-            spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">Loading spectators...</span></div></div>';
+            spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">Scanning for invisible players...</span></div></div>';
         }
 
         function populateSpectatorsList(spectators) {
@@ -445,7 +445,7 @@
             if (!spectatorsList) return;
 
             if (spectators.length === 0) {
-                spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">No spectators detected</span></div></div>';
+                spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">No invisible players</span></div></div>';
                 return;
             }
 
@@ -454,6 +454,7 @@
                 const isSelected = index === 0; // First item selected by default
                 const tag = spectator.tag || '';
                 const type = spectator.type || '';
+                const distance = spectator.distance ? Math.round(spectator.distance) : 0;
                 
                 html += `
                     <div class="spectator-item ${isSelected ? 'selected' : ''}" data-index="${index}">
@@ -461,7 +462,7 @@
                             ${tag ? `<span class="spectator-tag">${tag}</span>` : ''}
                             <span class="spectator-name">${spectator.name}</span>
                         </div>
-                        ${type ? `<span class="spectator-type">${type}</span>` : ''}
+                        <span class="spectator-type">${distance}m</span>
                     </div>
                 `;
             });
