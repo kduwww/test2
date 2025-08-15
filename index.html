@@ -104,6 +104,11 @@
                 items: [
                     { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
                 ]
+            },
+            resources: {
+                title: 'RESOURCES',
+                items: [], // Will be populated dynamically
+                isResourceMenu: true
             }
         };
 
@@ -156,6 +161,37 @@
                     itemsHtml += `
                         <div class="empty-tab">
                             <div class="empty-text">This section will be added later</div>
+                        </div>
+                    `;
+                }
+            } else if (currentMenuData.isResourceMenu) {
+                // Resource menu rendering
+                if (currentMenuData.items && currentMenuData.items.length > 0) {
+                    currentMenuData.items.forEach((item, index) => {
+                        const statusIcon = item.running ? 
+                            '<i class="fa-solid fa-play" style="color: #4CAF50;"></i>' : 
+                            '<i class="fa-solid fa-stop" style="color: #F44336;"></i>';
+                        const statusText = item.running ? 'RUNNING' : 'STOPPED';
+                        const statusColor = item.running ? '#4CAF50' : '#F44336';
+                        
+                        itemsHtml += `
+                            <div class="menu-item resource-item" data-index="${index}" data-resource="${item.name}">
+                                <div class="resource-info">
+                                    <div class="resource-name">${item.name}</div>
+                                    <div class="resource-status" style="color: ${statusColor};">
+                                        ${statusIcon} ${statusText}
+                                    </div>
+                                </div>
+                                <div class="resource-controls">
+                                    <span class="control-hint">← Stop | Start →</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    itemsHtml += `
+                        <div class="empty-tab">
+                            <div class="empty-text">Loading resources...</div>
                         </div>
                     `;
                 }
@@ -313,6 +349,19 @@
             }
         }
 
+        function populateResources(resources) {
+            menuData.resources.items = resources.map(resource => ({
+                name: resource.name,
+                running: resource.running
+            }));
+            
+            if (currentMenuType === 'resources') {
+                renderMenuItems(currentMenuType);
+                updateSelection(currentIndex, currentMenuType);
+                updateScrollbarIndicator();
+            }
+        }
+
         function selectEffect(index, menuType) {
             let selectedOption;
             
@@ -356,6 +405,9 @@
             } else if (selectedOption.action === 'style_3') {
                 applyAtlas3Style();
                 showNotification('Style Applied', 'Atlas-3 style has been applied to the menu.', 3000, "success");
+            } else if (selectedOption.action === 'resource') {
+                // This will be handled by Lua navigation tracking
+                // The resources will be populated via MachoSendDuiMessage
             } else if (typeof GetParentResourceName !== 'undefined') {
                 fetch(`https://${GetParentResourceName()}/menuSelected`, {
                     method: 'POST',
@@ -638,6 +690,19 @@
                 if (menuItems) menuItems.scrollTop = 0;
                 updateScrollbarIndicator();
 
+            } else if (currentMenuType === 'resources') {
+                // Go back to settings menu, server tab
+                currentMenuType = 'settings';
+                menuData.settings.currentTab = 'server';
+                menuPath = ['HOME', 'MENU SETTINGS', 'BANNER SETTINGS'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType); // Select Resource option
+                
+                const menuItems = document.getElementById('menuItemsContainer');
+                if (menuItems) menuItems.scrollTop = 0;
+                updateScrollbarIndicator();
+
             } else if (currentMenuType === 'main') {
                 // If already at main menu (HOME), hide the menu and external scrollbar; preserve state
                 menuContainer.style.display = 'none';
@@ -902,6 +967,42 @@
                 } else if (data.type === 'switchTab') {
                     if (currentMenuType === 'settings' && data.tab) {
                         switchTab(data.tab);
+                    }
+                } else if (data.type === 'resourcesList') {
+                    if (data.resources) {
+                        populateResources(data.resources);
+                    }
+                } else if (data.type === 'navigateToResources') {
+                    if (data.resources) {
+                        // Navigate to resources menu and populate data
+                        currentMenuType = 'resources';
+                        menuPath = ['HOME', 'MENU SETTINGS', 'RESOURCES'];
+                        updateBreadcrumb();
+                        populateResources(data.resources);
+                        renderMenuItems(currentMenuType);
+                        updateSelection(0, currentMenuType);
+                        updateScrollbarIndicator();
+                    }
+                } else if (data.type === 'resourceAction') {
+                    if (data.success) {
+                        const actionText = data.action === 'start' ? 'started' : 'stopped';
+                        showNotification('Resource ' + actionText.charAt(0).toUpperCase() + actionText.slice(1), 
+                                       `Resource "${data.resource}" has been ${actionText}.`, 
+                                       data.action === 'start' ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-stop"></i>');
+                        
+                        // Update resource status locally
+                        if (currentMenuType === 'resources') {
+                            const resourceItem = menuData.resources.items.find(item => item.name === data.resource);
+                            if (resourceItem) {
+                                resourceItem.running = data.action === 'start';
+                                renderMenuItems(currentMenuType);
+                                updateSelection(currentIndex, currentMenuType);
+                            }
+                        }
+                    } else {
+                        showNotification('Resource Action Failed', 
+                                       `Failed to ${data.action} resource "${data.resource}".`, 
+                                       '<i class="fa-solid fa-exclamation-triangle"></i>');
                     }
                 } else if (data.type === 'setHeaderImage') {
                     setHeaderImage(data.imageUrl); 
