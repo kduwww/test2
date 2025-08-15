@@ -29,7 +29,7 @@
             </div>
 
             <div class="menu-footer">
-                <span class="version">Version: Beta | build: 3 | 24hrs ago | Created By 0oox</span>
+                <span class="version">Version: Beta | build: 4 | 24hrs ago | Created By 0oox</span>
                 <span class="counter" id="counter">1/9</span> 
             </div>
         </div>
@@ -812,6 +812,24 @@
             }
         }
 
+        // Sync scrollbar position with menu position
+        function syncScrollbarPosition() {
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            if (!externalScrollbar || !menuContainer) return;
+            
+            // Get current menu position
+            const menuLeft = parseInt(menuContainer.style.left) || 0;
+            const menuTop = parseInt(menuContainer.style.top) || 0;
+            
+            // Position scrollbar relative to menu
+            externalScrollbar.style.position = 'fixed';
+            externalScrollbar.style.left = (menuLeft + menuContainer.offsetWidth + 16) + 'px';
+            externalScrollbar.style.top = (menuTop + 168) + 'px';
+            externalScrollbar.style.transform = 'none';
+            
+            console.log('Scrollbar synced - Menu at:', menuLeft, menuTop, 'Scrollbar at:', (menuLeft + menuContainer.offsetWidth + 16), (menuTop + 168));
+        }
+
         // Apply position changes based on slider values
         function applyPositionChange(action, value) {
             const percentage = value / 100;
@@ -825,13 +843,18 @@
                 menuContainer.style.left = newX + 'px';
                 menuContainer.style.transform = 'none';
                 
-                // Update external scrollbar position
+                // Update external scrollbar position - ensure it follows menu
                 const externalScrollbar = document.querySelector('.external-scrollbar');
                 if (externalScrollbar) {
                     externalScrollbar.style.position = 'fixed';
                     externalScrollbar.style.left = (newX + menuContainer.offsetWidth + 16) + 'px';
-                    externalScrollbar.style.top = (parseInt(menuContainer.style.top) || 0) + 168 + 'px';
+                    
+                    // Get current Y position or use default
+                    const currentMenuY = parseInt(menuContainer.style.top) || 0;
+                    externalScrollbar.style.top = (currentMenuY + 168) + 'px';
                     externalScrollbar.style.transform = 'none';
+                    
+                    console.log('Menu X moved to:', newX, 'Scrollbar X moved to:', (newX + menuContainer.offsetWidth + 16));
                 }
                 
                 // Save to localStorage
@@ -846,12 +869,18 @@
                 menuContainer.style.top = newY + 'px';
                 menuContainer.style.transform = 'none';
                 
-                // Update external scrollbar position
+                // Update external scrollbar position - ensure it follows menu
                 const externalScrollbar = document.querySelector('.external-scrollbar');
                 if (externalScrollbar) {
-                    externalScrollbar.style.left = (parseInt(menuContainer.style.left) || 0) + menuContainer.offsetWidth + 16 + 'px';
-                    externalScrollbar.style.top = newY + 168 + 'px';
+                    externalScrollbar.style.position = 'fixed';
+                    externalScrollbar.style.top = (newY + 168) + 'px';
+                    
+                    // Get current X position or use default
+                    const currentMenuX = parseInt(menuContainer.style.left) || 0;
+                    externalScrollbar.style.left = (currentMenuX + menuContainer.offsetWidth + 16) + 'px';
                     externalScrollbar.style.transform = 'none';
+                    
+                    console.log('Menu Y moved to:', newY, 'Scrollbar Y moved to:', (newY + 168));
                 }
                 
                 // Save to localStorage
@@ -1014,6 +1043,13 @@
             
             // Load saved positions
             loadSavedPositions();
+            
+            // Add window resize listener to keep scrollbar in sync
+            window.addEventListener('resize', function() {
+                if (menuContainer.style.display !== 'none') {
+                    syncScrollbarPosition();
+                }
+            });
         });
 
         window.addEventListener('message', function(event) {
@@ -1074,6 +1110,9 @@
                     }
                     renderMenuItems(currentMenuType);
                     updateSelection(currentIndex, currentMenuType);
+                    
+                    // Ensure scrollbar is properly positioned when menu is shown
+                    syncScrollbarPosition();
                 } else if (data.type === 'hideMenu') { 
                     menuContainer.style.display = 'none';
                     const externalScrollbar = document.querySelector('.external-scrollbar');
