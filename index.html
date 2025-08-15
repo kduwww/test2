@@ -561,17 +561,17 @@
                 if (menuItems) menuItems.scrollTop = 0;
                 updateScrollbarIndicator();
             } else if (currentMenuType === 'main') {
-                // If already at main menu (HOME), request menu close from Lua
-                if (typeof GetParentResourceName !== 'undefined') {
-                    fetch(`https://${GetParentResourceName()}/closeMenu`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                        body: JSON.stringify({})
-                    }).catch(error => console.error('Error closing menu:', error));
-                } else {
-                    // Fallback for when not in FiveM environment
-                    menuContainer.style.display = 'none';
+                // If already at main menu (HOME), reset everything and hide the menu
+                currentIndex = 0;
+                const menuItems = document.getElementById('menuItemsContainer');
+                if (menuItems) {
+                    menuItems.scrollTop = 0;
                 }
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+                updateCustomScrollbar();
+                
+                menuContainer.style.display = 'none';
             }
         }
 
@@ -803,11 +803,26 @@
                         selectEffect(currentIndex, currentMenuType); 
                     }
                 } else if (data.type === 'showMenu') { 
+                    // Reset to home menu and first item when opening
+                    currentMenuType = 'main';
+                    menuPath = ['HOME'];
+                    currentIndex = 0;
+                    updateBreadcrumb();
+                    
                     menuContainer.style.display = 'flex';
                     menuContainer.style.opacity = '1';
                     menuContainer.style.transform = 'none'; 
+                    
                     renderMenuItems(currentMenuType);
-                    updateSelection(currentIndex, currentMenuType);
+                    updateSelection(0, currentMenuType);
+                    
+                    // Reset scroll position
+                    const menuItems = document.getElementById('menuItemsContainer');
+                    if (menuItems) {
+                        menuItems.scrollTop = 0;
+                    }
+                    updateScrollbarIndicator();
+                    updateCustomScrollbar();
                 } else if (data.type === 'hideMenu') { 
                     menuContainer.style.display = 'none';
                 } else if (data.type === 'back') { 
