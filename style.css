@@ -280,7 +280,8 @@ html, body {
     font-family: 'Roboto', sans-serif;
     font-size: 13px;
     font-weight: 500;
-    color: #f0f0f0; 
+    color: #f0f0f0 !important; 
+    transition: color 0.2s ease;
 }
 
 .toggle-item.selected .toggle-text {
