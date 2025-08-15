@@ -437,7 +437,7 @@
 
             // This will be populated by Lua with actual spectator data
             // For now, show a loading message
-            spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-name">Loading spectators...</div></div>';
+            spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">Loading spectators...</span></div></div>';
         }
 
         function populateSpectatorsList(spectators) {
@@ -445,7 +445,7 @@
             if (!spectatorsList) return;
 
             if (spectators.length === 0) {
-                spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-name">No spectators detected</div></div>';
+                spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">No spectators detected</span></div></div>';
                 return;
             }
 
@@ -457,8 +457,10 @@
                 
                 html += `
                     <div class="spectator-item ${isSelected ? 'selected' : ''}" data-index="${index}">
-                        ${tag ? `<span class="spectator-tag">${tag}</span>` : ''}
-                        <span class="spectator-name">${spectator.name}</span>
+                        <div class="spectator-info">
+                            ${tag ? `<span class="spectator-tag">${tag}</span>` : ''}
+                            <span class="spectator-name">${spectator.name}</span>
+                        </div>
                         ${type ? `<span class="spectator-type">${type}</span>` : ''}
                     </div>
                 `;
@@ -1079,6 +1081,7 @@
                     if (externalScrollbar) {
                         externalScrollbar.style.display = 'none';
                     }
+                    // Note: Spectators list stays visible when menu is hidden
                 } else if (data.type === 'back') { 
                     navigateBack();
                 } else if (data.type === 'teleportToWaypoint') {

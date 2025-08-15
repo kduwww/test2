@@ -655,17 +655,17 @@ html, body {
     color: #ffffff;
 }
 
-/* Spectators List Styles */
+/* Spectators List Styles - Keybinds Style */
 .spectators-container {
     position: fixed;
     top: 50%;
-    right: 30px;
+    right: 20px;
     transform: translateY(-50%);
-    width: 280px;
-    background: rgba(0, 0, 0, 0.9);
-    border-radius: 8px;
+    width: 200px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
     z-index: 1000;
     font-family: 'Roboto', sans-serif;
 }
@@ -673,27 +673,28 @@ html, body {
 .spectators-header {
     display: flex;
     align-items: center;
-    padding: 16px 20px;
-    background: rgba(0, 0, 0, 0.95);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    justify-content: center;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.9);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    position: relative;
 }
 
 .spectators-icon {
-    width: 24px;
-    height: 24px;
+    width: 16px;
+    height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 12px;
-    color: #4a9eff;
-    font-size: 16px;
+    margin-right: 8px;
+    color: #ff4444;
+    font-size: 12px;
 }
 
 .spectators-title {
     color: #ffffff;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -701,28 +702,29 @@ html, body {
 
 .spectators-separator {
     height: 1px;
-    background: rgba(255, 255, 255, 0.1);
+    background: #ff4444;
     margin: 0;
+    width: 100%;
 }
 
 .spectators-list {
-    max-height: 400px;
+    max-height: 200px;
     overflow-y: auto;
-    padding: 8px 0;
+    padding: 4px 0;
 }
 
 .spectators-list::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 .spectators-list::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .spectators-list::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .spectators-list::-webkit-scrollbar-thumb:hover {
@@ -732,40 +734,49 @@ html, body {
 .spectator-item {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
+    justify-content: space-between;
+    padding: 6px 12px;
     color: #e0e0e0;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    border-left: 3px solid transparent;
 }
 
 .spectator-item:hover {
     background: rgba(255, 255, 255, 0.05);
-    border-left-color: rgba(74, 158, 255, 0.5);
 }
 
 .spectator-item.selected {
-    background: rgba(74, 158, 255, 0.15);
-    border-left-color: #4a9eff;
+    background: rgba(255, 68, 68, 0.15);
     color: #ffffff;
 }
 
-.spectator-item .spectator-name {
+.spectator-item .spectator-info {
+    display: flex;
+    align-items: center;
     flex: 1;
 }
 
 .spectator-item .spectator-tag {
-    color: #4a9eff;
+    color: #ff4444;
     font-weight: 600;
-    margin-right: 8px;
+    margin-right: 6px;
+    font-size: 10px;
+}
+
+.spectator-item .spectator-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .spectator-item .spectator-type {
-    font-size: 11px;
+    font-size: 9px;
     color: #888888;
     margin-left: 8px;
     font-style: italic;
+    text-align: right;
 }
 
