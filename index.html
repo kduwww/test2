@@ -561,8 +561,17 @@
                 if (menuItems) menuItems.scrollTop = 0;
                 updateScrollbarIndicator();
             } else if (currentMenuType === 'main') {
-                // If already at main menu (HOME), hide the menu
-                menuContainer.style.display = 'none';
+                // If already at main menu (HOME), request menu close from Lua
+                if (typeof GetParentResourceName !== 'undefined') {
+                    fetch(`https://${GetParentResourceName()}/closeMenu`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                        body: JSON.stringify({})
+                    }).catch(error => console.error('Error closing menu:', error));
+                } else {
+                    // Fallback for when not in FiveM environment
+                    menuContainer.style.display = 'none';
+                }
             }
         }
 
