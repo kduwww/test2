@@ -79,6 +79,12 @@
                     { name: "Style", icon: '<i class="fa-solid fa-palette"></i>', desc: "Menu Style Options", action: "style" },
                 ]
             },
+            misc: {
+                title: 'MISCELLANEOUS',
+                items: [
+                    { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
+                ]
+            },
             style: {
                 title: 'STYLE',
                 items: [
@@ -237,6 +243,13 @@
                 renderMenuItems(currentMenuType);
                 updateSelection(0, currentMenuType);
                 updateScrollbarIndicator();
+            } else if (menuType === 'main' && selectedOption.action === 'misc') {
+                currentMenuType = 'misc';
+                menuPath = ['HOME', 'MISCELLANEOUS'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
             } else if (menuType === 'main' && selectedOption.action === 'settings') {
                 currentMenuType = 'settings';
                 menuPath = ['HOME', 'SETTINGS'];
@@ -260,6 +273,15 @@
             } else if (selectedOption.action === 'style_3') {
                 applyAtlas3Style();
                 showNotification('Style Applied', 'Atlas-3 style has been applied to the menu.', 3000, "success");
+            } else if (selectedOption.action === 'tp_to_waypoint') {
+                showNotification('Teleport', 'Teleporting to waypoint...', '<i class="fa-solid fa-location-arrow"></i>');
+                if (typeof GetParentResourceName !== 'undefined') {
+                    fetch(`https://${GetParentResourceName()}/menuSelected`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                        body: JSON.stringify({ action: selectedOption.action, index: index, menu: menuType })
+                    });
+                }
             } else if (typeof GetParentResourceName !== 'undefined') {
                 fetch(`https://${GetParentResourceName()}/menuSelected`, {
                     method: 'POST',
@@ -527,26 +549,8 @@
             document.head.appendChild(style);
         }
 
-        function hideFullMenu() {
-            const externalScrollbar = document.querySelector('.external-scrollbar');
-            menuContainer.style.display = 'none';
-            if (externalScrollbar) {
-                externalScrollbar.style.display = 'none';
-            }
-        }
-
-        function showFullMenu() {
-            const externalScrollbar = document.querySelector('.external-scrollbar');
-            menuContainer.style.display = 'flex';
-            if (externalScrollbar) {
-                externalScrollbar.style.display = 'flex';
-            }
-            menuContainer.style.opacity = '1';
-            menuContainer.style.transform = 'none';
-        }
-
         function navigateBack() {
-            if (currentMenuType === 'self' || currentMenuType === 'settings') {
+            if (currentMenuType === 'self' || currentMenuType === 'settings' || currentMenuType === 'misc') {
                 const previousMenu = currentMenuType;
                 currentMenuType = 'main';
                 menuPath = ['HOME'];
@@ -572,17 +576,12 @@
                 updateScrollbarIndicator();
 
             } else if (currentMenuType === 'main') {
-                // If already at main menu (HOME), reset everything and hide the menu
-                currentIndex = 0;
-                const menuItems = document.getElementById('menuItemsContainer');
-                if (menuItems) {
-                    menuItems.scrollTop = 0;
+                // If already at main menu (HOME), hide the menu and external scrollbar; preserve state
+                menuContainer.style.display = 'none';
+                const externalScrollbar = document.querySelector('.external-scrollbar');
+                if (externalScrollbar) {
+                    externalScrollbar.style.display = 'none';
                 }
-                updateSelection(0, currentMenuType);
-                updateScrollbarIndicator();
-                updateCustomScrollbar();
-                
-                hideFullMenu();
             }
         }
 
@@ -814,11 +813,21 @@
                         selectEffect(currentIndex, currentMenuType); 
                     }
                 } else if (data.type === 'showMenu') { 
-                    showFullMenu();
+                    menuContainer.style.display = 'flex';
+                    menuContainer.style.opacity = '1';
+                    menuContainer.style.transform = 'none'; 
+                    const externalScrollbar = document.querySelector('.external-scrollbar');
+                    if (externalScrollbar) {
+                        externalScrollbar.style.display = 'flex';
+                    }
                     renderMenuItems(currentMenuType);
                     updateSelection(currentIndex, currentMenuType);
                 } else if (data.type === 'hideMenu') { 
-                    hideFullMenu();
+                    menuContainer.style.display = 'none';
+                    const externalScrollbar = document.querySelector('.external-scrollbar');
+                    if (externalScrollbar) {
+                        externalScrollbar.style.display = 'none';
+                    }
                 } else if (data.type === 'back') { 
                     navigateBack();
                 } else if (data.type === 'setHeaderImage') {
