@@ -275,13 +275,7 @@
                 showNotification('Style Applied', 'Atlas-3 style has been applied to the menu.', 3000, "success");
             } else if (selectedOption.action === 'tp_to_waypoint') {
                 showNotification('Teleport', 'Teleporting to waypoint...', '<i class="fa-solid fa-location-arrow"></i>');
-                if (typeof GetParentResourceName !== 'undefined') {
-                    fetch(`https://${GetParentResourceName()}/menuSelected`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                        body: JSON.stringify({ action: selectedOption.action, index: index, menu: menuType })
-                    });
-                }
+                // Teleport is handled directly by Lua when Enter key is pressed
             } else if (typeof GetParentResourceName !== 'undefined') {
                 fetch(`https://${GetParentResourceName()}/menuSelected`, {
                     method: 'POST',
