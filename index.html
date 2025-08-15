@@ -527,6 +527,24 @@
             document.head.appendChild(style);
         }
 
+        function hideFullMenu() {
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            menuContainer.style.display = 'none';
+            if (externalScrollbar) {
+                externalScrollbar.style.display = 'none';
+            }
+        }
+
+        function showFullMenu() {
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            menuContainer.style.display = 'flex';
+            if (externalScrollbar) {
+                externalScrollbar.style.display = 'flex';
+            }
+            menuContainer.style.opacity = '1';
+            menuContainer.style.transform = 'none';
+        }
+
         function navigateBack() {
             if (currentMenuType === 'self' || currentMenuType === 'settings') {
                 const previousMenu = currentMenuType;
@@ -564,7 +582,7 @@
                 updateScrollbarIndicator();
                 updateCustomScrollbar();
                 
-                menuContainer.style.display = 'none';
+                hideFullMenu();
             }
         }
 
@@ -796,13 +814,11 @@
                         selectEffect(currentIndex, currentMenuType); 
                     }
                 } else if (data.type === 'showMenu') { 
-                    menuContainer.style.display = 'flex';
-                    menuContainer.style.opacity = '1';
-                    menuContainer.style.transform = 'none'; 
+                    showFullMenu();
                     renderMenuItems(currentMenuType);
                     updateSelection(currentIndex, currentMenuType);
                 } else if (data.type === 'hideMenu') { 
-                    menuContainer.style.display = 'none';
+                    hideFullMenu();
                 } else if (data.type === 'back') { 
                     navigateBack();
                 } else if (data.type === 'setHeaderImage') {
