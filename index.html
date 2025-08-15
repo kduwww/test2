@@ -29,7 +29,7 @@
             </div>
 
             <div class="menu-footer">
-                <span class="version">Version: Beta | 24hrs ago | Created By 0oox</span>
+                <span class="version">Version: Beta | build: 3875892 | 24hrs ago | Created By 0oox</span>
                 <span class="counter" id="counter">1/9</span> 
             </div>
         </div>
@@ -277,6 +277,7 @@
             setTimeout(() => {
                 updateCustomScrollbar();
                 updateScrollbarIndicator();
+
             }, 10);
             
             renderedItems.forEach(itemElement => {
@@ -354,9 +355,10 @@
             const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
             const totalItems = currentItems.length;
 
-            if (currentItems[currentIndex]) {
-                currentItems[currentIndex].classList.remove('selected');
-            }
+            // Remove selection from all items first
+            currentItems.forEach(item => {
+                item.classList.remove('selected');
+            });
             
             currentIndex = index;
 
@@ -787,15 +789,26 @@
                 highlightBar.style.background = 'rgba(255, 215, 0, 0.15)';
             }
             
-            // Apply Homer Atlas default colors
+            // Apply Homer Atlas default colors with proper text color management
             const style = document.createElement('style');
             style.textContent = `
+                /* Default colors for all menu items */
+                .menu-item .text { color: #f0f0f0 !important; }
+                .menu-item .icon { color: #d0d0d0 !important; }
+                .menu-item .arrow { color: #d0d0d0 !important; }
+                .toggle-item .toggle-text { color: #f0f0f0 !important; }
+                
+                /* Selected state colors */
                 .menu-item.selected .text { color: #ffd700 !important; }
                 .menu-item.selected .icon { color: #ffd700 !important; }
                 .menu-item.selected .arrow { color: #ffd700 !important; }
                 .toggle-item.selected .toggle-text { color: #ffd700 !important; }
+                
+                /* Header and footer colors */
                 .header-home-text { color: #ffd700 !important; }
                 .menu-footer .counter { background: rgba(255, 215, 0, 0.15) !important; color: #ffd700 !important; box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3) !important; }
+                
+                /* Notification colors */
                 .notification { background: rgba(25, 25, 25, 0.95) !important; border: 1px solid rgba(255, 215, 0, 0.4) !important; }
                 .notification-icon { color: #ffd700 !important; }
                 .notification-title { color: #ffd700 !important; }
@@ -905,6 +918,7 @@
             scrollbarIndicator.style.top = clampedPosition + 'px';
             scrollbarIndicator.style.display = 'block';
         }
+
 
         function updateCustomScrollbar() {
             const menuItems = document.getElementById('menuItemsContainer');
