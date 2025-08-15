@@ -560,6 +560,9 @@
                 const menuItems = document.getElementById('menuItemsContainer');
                 if (menuItems) menuItems.scrollTop = 0;
                 updateScrollbarIndicator();
+            } else if (currentMenuType === 'main') {
+                // If already at main menu (HOME), hide the menu
+                menuContainer.style.display = 'none';
             }
         }
 
