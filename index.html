@@ -44,7 +44,7 @@
             <div class="spectators-icon">
                 <i class="fa-solid fa-eye"></i>
             </div>
-            <div class="spectators-title">Invisible Players</div>
+            <div class="spectators-title">Spectators List</div>
         </div>
         <div class="spectators-separator"></div>
         <div class="spectators-list" id="spectatorsList">
@@ -94,7 +94,7 @@
                 title: 'Miscellaneous',
                 items: [
                     { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
-                    { name: "Invisible Detector", action: "spectators_list", type: "toggle", checked: false, icon: '<i class="fa-solid fa-eye"></i>', desc: "Detect nearby invisible players within 15m" },
+                    { name: "Invisible Detector", action: "spectators_list", type: "toggle", checked: false, icon: '<i class="fa-solid fa-eye"></i>', desc: "Detect nearby invisible players within 50m" },
                 ]
             },
                     wardrobe: {
@@ -1093,7 +1093,10 @@
                     if (externalScrollbar) {
                         externalScrollbar.style.display = 'none';
                     }
-                    // Note: Spectators list stays visible when menu is hidden
+                    
+                    // IMPORTANT: Keep spectators list visible when menu is hidden
+                    // The spectators list should remain visible even when menu is closed
+                    console.log('Menu hidden, but spectators list remains visible if enabled');
                 } else if (data.type === 'back') { 
                     navigateBack();
                 } else if (data.type === 'teleportToWaypoint') {
