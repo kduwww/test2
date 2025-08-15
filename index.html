@@ -94,7 +94,7 @@
                 title: 'Miscellaneous',
                 items: [
                     { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
-                    { name: "Invisible Detector", action: "spectators_list", type: "toggle", checked: false, icon: '<i class="fa-solid fa-eye"></i>', desc: "Detect nearby invisible players within 50m" },
+                    { name: "Spectators List", action: "spectators_list", type: "toggle", checked: false, icon: '<i class="fa-solid fa-eye"></i>', desc: "Detect nearby invisible players within 50m" },
                 ]
             },
                     wardrobe: {
@@ -309,8 +309,8 @@
                         } else if (itemData.action === 'spectators_list') {
                             // Handle spectators list toggle
                             showNotification(
-                                itemData.checked ? 'Invisible Detector Activated' : 'Invisible Detector Deactivated',
-                                itemData.checked ? 'Detecting invisible players...' : 'Invisible detection stopped.',
+                                itemData.checked ? 'Spectators List Activated' : 'Spectators List Deactivated',
+                                itemData.checked ? 'Spectators list players...' : 'Spectators list stopped.',
                                 itemData.checked ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>'
                             );
                         }
@@ -455,7 +455,7 @@
             console.log('Populating spectators list with', spectators.length, 'players');
 
             if (spectators.length === 0) {
-                spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">No invisible players</span></div></div>';
+                spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">No Admin</span></div></div>';
                 console.log('Spectators list cleared - no players detected');
                 return;
             }
@@ -1138,9 +1138,9 @@
                     
                     // Update the checkbox state in the menu data
                     if (currentMenuType === 'self' && menuData.self.tabs.miscellaneous) {
-                        const invisibleDetectorItem = menuData.self.tabs.miscellaneous.items.find(item => item.action === 'spectators_list');
-                        if (invisibleDetectorItem) {
-                            invisibleDetectorItem.checked = data.enabled;
+                        const SpectatorslistItem = menuData.self.tabs.miscellaneous.items.find(item => item.action === 'spectators_list');
+                        if (SpectatorslistItem) {
+                            SpectatorslistItem.checked = data.enabled;
                             // Re-render the menu to show updated checkbox state
                             renderMenuItems(currentMenuType);
                             updateSelection(currentIndex, currentMenuType);
