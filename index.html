@@ -273,9 +273,6 @@
             } else if (selectedOption.action === 'style_3') {
                 applyAtlas3Style();
                 showNotification('Style Applied', 'Atlas-3 style has been applied to the menu.', 3000, "success");
-            } else if (selectedOption.action === 'tp_to_waypoint') {
-                showNotification('Teleport', 'Teleporting to waypoint...', '<i class="fa-solid fa-location-arrow"></i>');
-                // Teleport is handled directly by Lua when Enter key is pressed
             } else if (typeof GetParentResourceName !== 'undefined') {
                 fetch(`https://${GetParentResourceName()}/menuSelected`, {
                     method: 'POST',
@@ -824,6 +821,12 @@
                     }
                 } else if (data.type === 'back') { 
                     navigateBack();
+                } else if (data.type === 'teleportToWaypoint') {
+                    if (data.success) {
+                        showNotification('Teleport', 'Successfully teleported to waypoint!', '<i class="fa-solid fa-location-arrow"></i>');
+                    } else {
+                        showNotification('Teleport Failed', 'No waypoint set on map!', '<i class="fa-solid fa-exclamation-triangle"></i>');
+                    }
                 } else if (data.type === 'setHeaderImage') {
                     setHeaderImage(data.imageUrl); 
                 } else if (data.type === 'showCustomNotification') {
