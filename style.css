@@ -79,7 +79,7 @@ html, body {
     box-shadow: 
         0 4px 15px rgba(0, 0, 0, 0.6), 
         inset 0 0 8px rgba(255, 255, 255, 0.05);
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     padding: 4px 0;
@@ -457,5 +457,69 @@ html, body {
 @keyframes timerProgress {
     0% { width: 100%; }
     100% { width: 0; }
+}
+
+/* Tab styles for settings menu */
+.tab-container {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tab-headers {
+    display: flex;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+    margin: 8px 12px;
+    overflow: hidden;
+}
+
+.tab-header {
+    flex: 1;
+    padding: 8px 12px;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #b0b0b0;
+    background: rgba(40, 40, 40, 0.8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-right: 1px solid rgba(255, 215, 0, 0.1);
+    user-select: none;
+}
+
+.tab-header:last-child {
+    border-right: none;
+}
+
+.tab-header.active {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%);
+    color: #000000;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.tab-header:hover:not(.active) {
+    background: rgba(60, 60, 60, 0.9);
+    color: #ffd700;
+}
+
+/* Empty tab state */
+.empty-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100px;
+}
+
+.empty-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #888888;
+    text-align: center;
+    font-style: italic;
 }
 
