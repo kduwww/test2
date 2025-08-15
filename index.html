@@ -6,476 +6,17 @@
     <title>Lean Menu - Elite Edition</title> 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-}
-
-html, body {
-    width: 100%;
-    height: 100%;
-    background-color: transparent !important; 
-    overflow: hidden;
-    font-family: 'Roboto', sans-serif;
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-}
-
-.menu-wrapper {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.menu-container {
-    width: 370px; 
-    height: 543px; 
-    background: rgba(0, 0, 0, 0.6); 
-    border-radius: 6px; 
-    box-shadow: 
-        0 4px 15px rgba(0, 0, 0, 0.6), 
-        inset 0 0 8px rgba(255, 255, 255, 0.05); 
-    overflow: hidden;
-    position: relative; 
-    display: flex;
-    flex-direction: column;
-    opacity: 1; 
-}
-
-.menu-header {
-    height: 160px; 
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%); 
-    position: relative;
-    background-size: cover; 
-    background-position: center top; 
-    background-repeat: no-repeat;
-    border-top-left-radius: 7px; 
-    border-top-right-radius: 7px;
-    box-shadow: inset 0 -2px 6px rgba(255, 215, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.2); 
-}
-
-.header-home-text {
-    position: absolute; 
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #000000; 
-    color: #ffffff;
-    font-family: 'Roboto', sans-serif;
-    font-size: 12px; 
-    font-weight: 600; 
-    text-transform: uppercase;
-    letter-spacing: 1px; 
-    text-align: center; 
-    padding: 8px; 
-    border-radius: 0; 
-    box-shadow: none; 
-}
-
-.external-scrollbar {
-    width: 12px;
-    height: 343px;
-    position: relative;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 3px;
-    margin-top: 168px;
-    box-shadow: 
-        0 4px 15px rgba(0, 0, 0, 0.6), 
-        inset 0 0 8px rgba(255, 255, 255, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 4px 0;
-}
-
-.custom-scrollbar {
-    position: relative;
-    width: 2px;
-    height: calc(100% - 24px);
-    background: rgba(60, 60, 60, 0.8);
-    border-radius: 1px;
-    z-index: 10;
-    margin: 12px 0;
-}
-
-.scrollbar-indicator {
-    position: absolute;
-    left: 0px;
-    width: 2px;
-    height: 20px;
-    background: linear-gradient(180deg, #ffd700 0%, #ffa500 100%);
-    border-radius: 1px;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 
-        0 0 6px rgba(255, 215, 0, 0.8),
-        0 0 12px rgba(255, 215, 0, 0.4),
-        inset 0 1px 1px rgba(255, 255, 255, 0.3);
-    z-index: 15;
-    border: 1px solid rgba(255, 215, 0, 0.6);
-    max-height: calc(100% - 4px);
-}
-
-.custom-scrollbar-thumb {
-    position: absolute;
-    width: 100%;
-    background: rgba(70, 70, 70, 0.8);
-    border-radius: 1px;
-    min-height: 15px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
-}
-
-.custom-scrollbar-thumb:hover {
-    background: rgba(90, 90, 90, 0.9);
-    transform: scaleX(1.5);
-    box-shadow: 
-        inset 0 1px 1px rgba(255, 255, 255, 0.15),
-        0 0 3px rgba(255, 215, 0, 0.25);
-}
-
-.scroll-arrow {
-    width: 10px;
-    height: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 8px;
-    color: rgba(160, 160, 160, 0.8);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border-radius: 2px;
-    user-select: none;
-}
-
-.scroll-arrow:hover {
-    color: rgba(255, 215, 0, 0.9);
-    background: rgba(255, 215, 0, 0.08);
-    transform: scale(1.1);
-}
-
-.scroll-arrow:active {
-    transform: scale(0.95);
-    background: rgba(255, 215, 0, 0.15);
-}
-
-.scroll-arrow-up {
-    margin-bottom: 3px;
-}
-
-.scroll-arrow-down {
-    margin-top: 3px;
-}
-
-.menu-items {
-    padding: 4px 0;
-    height: calc(100% - 160px - 32px); 
-    overflow-y: auto; 
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    scroll-behavior: smooth;
-    padding-bottom: 20px;
-}
-
-.menu-items::-webkit-scrollbar {
-    display: none;
-}
-
-.menu-item {
-    display: flex;
-    align-items: center;
-    padding: 5px 12px;
-    margin: 0;
-    cursor: pointer;
-    position: relative;
-    min-height: 38px;
-    transition: none; 
-    z-index: 2;
-}
-
-.menu-item:hover {
-    background: transparent;
-}
-
-.menu-item.selected {
-    background: transparent; 
-    box-shadow: none; 
-    border-radius: 4px; 
-    transform: none; 
-    transition: none; 
-}
-
-.highlight-bar {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 38px;
-    background: rgba(255, 215, 0, 0.15); 
-    border-radius: 3px; 
-    z-index: 1; 
-    transition: top 0.2s ease-out;
-}
-
-.menu-item .icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    color: #d0d0d0; 
-    transition: none; 
-    position: relative;
-    z-index: 2;
-}
-
-.menu-item.selected .icon {
-    color: #ffd700; 
-}
-
-.menu-item .text {
-    flex: 1;
-    font-family: 'Roboto', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: #f0f0f0; 
-    transition: none; 
-    position: relative;
-    z-index: 2;
-}
-
-.menu-item.selected .text {
-    color: #ffd700; 
-}
-
-.menu-item .arrow {
-    position: relative;
-    z-index: 2;
-    color: #d0d0d0; 
-    transition: none; 
-}
-
-.menu-item.selected .arrow {
-    color: #ffd700; 
-}
-
-.toggle-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; 
-    padding: 5px 12px;
-    margin: 0;
-    cursor: pointer;
-    position: relative;
-    min-height: 38px;
-    transition: none; 
-    z-index: 2;
-}
-
-.toggle-item:hover {
-    background: transparent;
-}
-
-.toggle-item.selected .toggle-text {
-    color: #ffd700; 
-}
-
-.toggle-item .toggle-text {
-    flex: 1;
-    font-family: 'Roboto', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: #f0f0f0; 
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 44px; 
-    height: 22px; 
-    border-radius: 11px;
-    background-color: rgba(100, 100, 100, 0.8); 
-    transition: background-color 0.2s ease-out, box-shadow 0.2s ease-out;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4); 
-    flex-shrink: 0; 
-}
-
-.toggle-switch::before {
-    content: '';
-    position: absolute;
-    width: 18px; 
-    height: 18px;
-    border-radius: 50%;
-    background-color: #fff; 
-    top: 2px;
-    left: 2px;
-    transition: transform 0.2s ease-out, background-color 0.2s ease-out;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); 
-}
-
-.toggle-switch.on {
-    background-color: #ffd700; 
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.4); 
-}
-
-.toggle-switch.on::before {
-    transform: translateX(22px); 
-    background-color: #fff; 
-}
-
-.toggle-switch .toggle-icon {
-    display: none; 
-}
-
-.menu-footer {
-    background: rgba(8, 8, 8, 0.7); 
-    padding: 8px 16px;
-    font-family: 'Roboto', sans-serif;
-    font-size: 11px;
-    color: #b0b0b0;
-    border-top: 1px solid rgba(255, 215, 0, 0.25); 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 32px;
-    border-bottom-left-radius: 7px; 
-    border-bottom-right-radius: 7px;
-}
-
-.menu-footer .version {
-    color: #b0b0b0;
-    font-weight: 500;
-}
-
-.menu-footer .counter {
-    background: rgba(255, 215, 0, 0.15); 
-    border-radius: 6px;
-    color: #ffd700; 
-    font-weight: 600;
-    font-size: 11px;
-    padding: 2px 5px;
-    box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3); 
-}
-
-.notification-container {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 1000;
-}
-
-.notification {
-    background: rgba(25, 25, 25, 0.95); 
-    border: 1px solid rgba(255, 215, 0, 0.4); 
-    padding: 14px 18px; 
-    border-radius: 10px; 
-    min-width: 260px;
-    max-width: 320px;
-    box-shadow: 
-        0 6px 20px rgba(0, 0, 0, 0.5), 
-        0 0 0 1px rgba(255, 215, 0, 0.05); 
-    display: flex;
-    align-items: center;
-    animation: notificationFadeIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
-    opacity: 0;
-    transform: translateY(10px); 
-}
-
-.notification.fade-out {
-    animation: notificationFadeOut 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; 
-}
-
-@keyframes notificationFadeIn {
-    0% {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-@keyframes notificationFadeOut {
-    0% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-}
-
-.notification-content {
-    display: flex;
-    align-items: center;
-    flex: 1;
-}
-
-.notification-icon {
-    font-size: 18px; 
-    margin-right: 10px; 
-    color: #ffd700; 
-    text-shadow: none; 
-    animation: none; 
-}
-
-.notification-text {
-    flex: 1;
-}
-
-.notification-title {
-    font-family: 'Roboto', sans-serif;
-    font-size: 15px; 
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 2px; 
-    text-shadow: none; 
-}
-
-.notification-message {
-    font-family: 'Roboto', sans-serif;
-    font-size: 12px; 
-    font-weight: 500;
-    color: #ffa500; 
-    text-shadow: none; 
-}
-
-.notification-timer {
-    width: 100%;
-    height: 2px; 
-    background: #ffd700; 
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    animation: timerProgress 4s linear forwards;
-    border-radius: 0 0 8px 8px; 
-}
-
-@keyframes timerProgress {
-    0% { width: 100%; }
-    100% { width: 0; }
-}
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="menu-wrapper">
                     <div class="external-scrollbar">
+                <div class="scroll-arrow scroll-arrow-up">▲</div>
                 <div class="custom-scrollbar">
                     <div class="custom-scrollbar-thumb" id="customScrollbarThumb"></div>
                     <div class="scrollbar-indicator" id="scrollbarIndicator"></div>
                 </div>
+                <div class="scroll-arrow scroll-arrow-down">▼</div>
             </div>
         
         <div class="menu-container" id="mainMenu">
@@ -498,10 +39,11 @@ html, body {
     </div>
 
     <script>
-        const bannerImageUrl = 'https://media.discordapp.net/attachments/1385473748068728922/1385879507289899148/Untitled12_20250621101005.png?ex=6857ac5e&is=68565ade&hm=d6b1c32143168757f493fcfe79cb7dad4849f8b56e7ca841ad23888219fe491e&=&format=webp&quality=lossless'; 
+        const bannerImageUrl = 'style-image/Atlas.png'; // Default Homer Atlas header image 
 
         let currentIndex = 0; 
         let currentMenuType = 'main';
+        let menuPath = ['HOME'];
 
         const menuContainer = document.getElementById('mainMenu'); 
         const headerText = document.getElementById('headerText'); 
@@ -528,8 +70,21 @@ html, body {
             self: {
                 title: 'SELF',
                 items: [
-                    { name: "Back", icon: '<i class="fa-solid fa-arrow-left"></i>', desc: "Return to Main Menu", action: "back" },
                     { name: "Noclip", action: "noclip_toggle", type: "toggle", checked: false },
+                ]
+            },
+            settings: {
+                title: 'SETTINGS',
+                items: [
+                    { name: "Style", icon: '<i class="fa-solid fa-palette"></i>', desc: "Menu Style Options", action: "style" },
+                ]
+            },
+            style: {
+                title: 'STYLE',
+                items: [
+                    { name: "ATLAS-1", icon: '<i class="fa-solid fa-1"></i>', desc: "Style Option 1", action: "style_1" },
+                    { name: "ATLAS-2", icon: '<i class="fa-solid fa-2"></i>', desc: "Style Option 2", action: "style_2" },
+                    { name: "ATLAS-3", icon: '<i class="fa-solid fa-3"></i>', desc: "Style Option 3", action: "style_3" },
                 ]
             }
         };
@@ -547,12 +102,11 @@ html, body {
                         </div>
                     `;
                 } else {
-                    const itemClass = (item.action === 'back') ? 'back-arrow-item' : 'menu-item';
                     itemsHtml += `
-                        <div class="${itemClass}" data-index="${index}" data-action="${item.action}">
+                        <div class="menu-item" data-index="${index}" data-action="${item.action}">
                             <div class="icon">${item.icon}</div>
                             <div class="text">${item.name}</div>
-                            ${(item.action !== 'back') ? '<div class="arrow">»</div>' : ''}
+                            <div class="arrow">»</div>
                         </div>
                     `;
                 }
@@ -561,7 +115,7 @@ html, body {
             
             highlightBar = document.querySelector('.highlight-bar');
 
-            const renderedItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+            const renderedItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item');
             
             // Update custom scrollbar after rendering new items
             setTimeout(() => {
@@ -596,8 +150,6 @@ html, body {
                         );
 
                         updateSelection(index, currentMenuType);
-                    } else if (action === 'back') {
-                        navigateBack();
                     } else {
                         updateSelection(index, currentMenuType);
                         selectEffect(index, currentMenuType);
@@ -611,12 +163,26 @@ html, body {
         function setHeaderImage(imageUrl) {
             const header = document.getElementById('menuHeader');
             if (header && imageUrl) {
-                header.style.backgroundImage = `url('${imageUrl}')`;
+                // Create a test image to check if it loads
+                const testImg = new Image();
+                testImg.onload = function() {
+                    console.log('✅ Image loaded successfully:', imageUrl);
+                    header.style.backgroundImage = `url('${imageUrl}'), linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%)`;
+                    header.style.backgroundSize = 'cover, cover';
+                    header.style.backgroundPosition = 'center, center';
+                    header.style.backgroundRepeat = 'no-repeat, no-repeat';
+                };
+                testImg.onerror = function() {
+                    console.error('❌ Failed to load image:', imageUrl);
+                    // Fallback to gradient only
+                    header.style.backgroundImage = 'linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%)';
+                };
+                testImg.src = imageUrl;
             }
         }
 
         function updateSelection(index, menuType) {
-            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item');
             const totalItems = currentItems.length;
 
             if (currentItems[currentIndex]) {
@@ -664,19 +230,36 @@ html, body {
             const selectedOption = menuData[menuType].items[index];
             if (!selectedOption) return;
 
-            if (selectedOption.action === 'back') {
-                navigateBack();
-                return;
-            }
-
             if (menuType === 'main' && selectedOption.action === 'self') {
                 currentMenuType = 'self';
-                headerText.textContent = menuData.self.title;
+                menuPath = ['HOME', 'SELF'];
+                updateBreadcrumb();
                 renderMenuItems(currentMenuType);
                 updateSelection(0, currentMenuType);
                 updateScrollbarIndicator();
-            } else if (selectedOption.action === 'settings') {
-                showNotification('Action Performed', `${selectedOption.name} was selected.`);
+            } else if (menuType === 'main' && selectedOption.action === 'settings') {
+                currentMenuType = 'settings';
+                menuPath = ['HOME', 'SETTINGS'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            } else if (menuType === 'settings' && selectedOption.action === 'style') {
+                currentMenuType = 'style';
+                menuPath = ['HOME', 'SETTINGS', 'STYLE'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            } else if (selectedOption.action === 'style_1') {
+                applyAtlasStyle();
+                showNotification('Style Applied', 'Atlas-1 style has been applied to the menu.', 3000, "success");
+            } else if (selectedOption.action === 'style_2') {
+                applyAtlas2Style();
+                showNotification('Style Applied', 'Atlas-2 style has been applied to the menu.', 3000, "success");
+            } else if (selectedOption.action === 'style_3') {
+                applyAtlas3Style();
+                showNotification('Style Applied', 'Atlas-3 style has been applied to the menu.', 3000, "success");
             } else if (typeof GetParentResourceName !== 'undefined') {
                 fetch(`https://${GetParentResourceName()}/menuSelected`, {
                     method: 'POST',
@@ -686,13 +269,293 @@ html, body {
             }
         }
 
+        function updateBreadcrumb() {
+            if (headerText) {
+                headerText.textContent = menuPath.join(' >> ');
+            }
+        }
+
+        function applyAtlasStyle() {
+            // Apply Atlas style with dark blue theme
+            const menuContainer = document.getElementById('mainMenu');
+            const header = document.getElementById('menuHeader');
+            
+            if (menuContainer) {
+                menuContainer.style.background = 'rgba(0, 0, 0, 0.6)';
+                menuContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.05)';
+            }
+            
+            if (header) {
+                header.style.background = 'linear-gradient(135deg, rgba(30, 50, 80, 0.95) 0%, rgba(20, 35, 60, 0.95) 100%)';
+                header.style.backgroundImage = 'url("style-image/ATLAS-1.png"), linear-gradient(135deg, rgba(30, 50, 80, 0.95) 0%, rgba(20, 35, 60, 0.95) 100%)';
+                header.style.backgroundSize = 'cover, cover';
+                header.style.backgroundPosition = 'center, center';
+                header.style.backgroundRepeat = 'no-repeat, no-repeat';
+            }
+            
+            // Update scrollbar colors
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            if (externalScrollbar) {
+                externalScrollbar.style.background = 'rgba(0, 0, 0, 0.6)';
+                externalScrollbar.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.05)';
+            }
+            
+            // Update scrollbar indicator to white/blue theme
+            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
+            if (scrollbarIndicator) {
+                scrollbarIndicator.style.background = 'linear-gradient(180deg, #ffffff 0%, #e0e8ff 100%)';
+                scrollbarIndicator.style.boxShadow = '0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 255, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3)';
+                scrollbarIndicator.style.border = '1px solid rgba(255, 255, 255, 0.6)';
+            }
+            
+            // Update scroll arrows to white
+            const scrollArrows = document.querySelectorAll('.scroll-arrow');
+            scrollArrows.forEach(arrow => {
+                arrow.style.color = 'rgba(255, 255, 255, 0.8)';
+            });
+            
+            // Update highlight bar to white/blue
+            const highlightBar = document.querySelector('.highlight-bar');
+            if (highlightBar) {
+                highlightBar.style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+            
+            // Update selected text colors to white
+            const style = document.createElement('style');
+            style.textContent = `
+                .menu-item.selected .text { color: #ffffff !important; }
+                .menu-item.selected .icon { color: #ffffff !important; }
+                .menu-item.selected .arrow { color: #ffffff !important; }
+                .toggle-item.selected .toggle-text { color: #ffffff !important; }
+                .header-home-text { color: #ffffff !important; }
+                .menu-footer .counter { background: rgba(255, 255, 255, 0.1) !important; color: #ffffff !important; box-shadow: 0 1px 3px rgba(255, 255, 255, 0.2) !important; }
+                .notification { background: rgba(15, 25, 45, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.4) !important; }
+                .notification-icon { color: #ffffff !important; }
+                .notification-title { color: #ffffff !important; }
+                .notification-message { color: #e0e8ff !important; }
+                .notification-timer { background: #ffffff !important; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function applyAtlas2Style() {
+            // Apply Atlas-2 style with metallic silver theme
+            const menuContainer = document.getElementById('mainMenu');
+            const header = document.getElementById('menuHeader');
+            
+            if (menuContainer) {
+                menuContainer.style.background = 'rgba(0, 0, 0, 0.6)';
+                menuContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(192, 192, 192, 0.1)';
+            }
+            
+            if (header) {
+                header.style.background = 'linear-gradient(135deg, rgba(20, 30, 50, 0.95) 0%, rgba(15, 25, 40, 0.95) 100%)';
+                header.style.backgroundImage = 'url("style-image/ATLAS-2.png"), linear-gradient(135deg, rgba(20, 30, 50, 0.95) 0%, rgba(15, 25, 40, 0.95) 100%)';
+                header.style.backgroundSize = 'cover, cover';
+                header.style.backgroundPosition = 'center, center';
+                header.style.backgroundRepeat = 'no-repeat, no-repeat';
+            }
+            
+            // Update scrollbar colors
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            if (externalScrollbar) {
+                externalScrollbar.style.background = 'rgba(0, 0, 0, 0.6)';
+                externalScrollbar.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(192, 192, 192, 0.1)';
+            }
+            
+            // Update scrollbar indicator to metallic silver theme
+            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
+            if (scrollbarIndicator) {
+                scrollbarIndicator.style.background = 'linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%)';
+                scrollbarIndicator.style.boxShadow = '0 0 6px rgba(192, 192, 192, 0.8), 0 0 12px rgba(192, 192, 192, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3)';
+                scrollbarIndicator.style.border = '1px solid rgba(192, 192, 192, 0.6)';
+            }
+            
+            // Update scroll arrows to metallic silver
+            const scrollArrows = document.querySelectorAll('.scroll-arrow');
+            scrollArrows.forEach(arrow => {
+                arrow.style.color = 'rgba(192, 192, 192, 0.8)';
+            });
+            
+            // Update highlight bar to metallic silver
+            const highlightBar = document.querySelector('.highlight-bar');
+            if (highlightBar) {
+                highlightBar.style.background = 'rgba(192, 192, 192, 0.15)';
+            }
+            
+            // Update selected text colors to metallic silver
+            const style = document.createElement('style');
+            style.textContent = `
+                .menu-item.selected .text { color: #c0c0c0 !important; }
+                .menu-item.selected .icon { color: #c0c0c0 !important; }
+                .menu-item.selected .arrow { color: #c0c0c0 !important; }
+                .toggle-item.selected .toggle-text { color: #c0c0c0 !important; }
+                .header-home-text { color: #c0c0c0 !important; }
+                .menu-footer .counter { background: rgba(192, 192, 192, 0.15) !important; color: #c0c0c0 !important; box-shadow: 0 1px 3px rgba(192, 192, 192, 0.3) !important; }
+                .notification { background: rgba(20, 30, 50, 0.95) !important; border: 1px solid rgba(192, 192, 192, 0.4) !important; }
+                .notification-icon { color: #c0c0c0 !important; }
+                .notification-title { color: #c0c0c0 !important; }
+                .notification-message { color: #a0a0a0 !important; }
+                .notification-timer { background: #c0c0c0 !important; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function applyAtlas3Style() {
+            // Apply Atlas-3 style with soft, eye-friendly colors
+            const menuContainer = document.getElementById('mainMenu');
+            const header = document.getElementById('menuHeader');
+            
+            if (menuContainer) {
+                menuContainer.style.background = 'rgba(0, 0, 0, 0.6)';
+                menuContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(176, 196, 222, 0.1)';
+            }
+            
+            if (header) {
+                header.style.background = 'linear-gradient(135deg, rgba(25, 25, 50, 0.95) 0%, rgba(40, 50, 80, 0.95) 100%)';
+                header.style.backgroundImage = 'url("style-image/ATLAS-3.png"), linear-gradient(135deg, rgba(25, 25, 50, 0.95) 0%, rgba(40, 50, 80, 0.95) 100%)';
+                header.style.backgroundSize = 'cover, cover';
+                header.style.backgroundPosition = 'center, center';
+                header.style.backgroundRepeat = 'no-repeat, no-repeat';
+            }
+            
+            // Update scrollbar colors
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            if (externalScrollbar) {
+                externalScrollbar.style.background = 'rgba(0, 0, 0, 0.6)';
+                externalScrollbar.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(176, 196, 222, 0.1)';
+            }
+            
+            // Update scrollbar indicator to soft blue theme
+            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
+            if (scrollbarIndicator) {
+                scrollbarIndicator.style.background = 'linear-gradient(180deg, #b0c4de 0%, #778899 100%)';
+                scrollbarIndicator.style.boxShadow = '0 0 6px rgba(176, 196, 222, 0.6), 0 0 12px rgba(176, 196, 222, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2)';
+                scrollbarIndicator.style.border = '1px solid rgba(176, 196, 222, 0.5)';
+            }
+            
+            // Update scroll arrows to soft blue
+            const scrollArrows = document.querySelectorAll('.scroll-arrow');
+            scrollArrows.forEach(arrow => {
+                arrow.style.color = 'rgba(176, 196, 222, 0.7)';
+            });
+            
+            // Update highlight bar to soft blue
+            const highlightBar = document.querySelector('.highlight-bar');
+            if (highlightBar) {
+                highlightBar.style.background = 'rgba(176, 196, 222, 0.1)';
+            }
+            
+            // Update selected text colors to soft blue
+            const style = document.createElement('style');
+            style.textContent = `
+                .menu-item.selected .text { color: #b0c4de !important; }
+                .menu-item.selected .icon { color: #b0c4de !important; }
+                .menu-item.selected .arrow { color: #b0c4de !important; }
+                .toggle-item.selected .toggle-text { color: #b0c4de !important; }
+                .header-home-text { color: #b0c4de !important; }
+                .menu-footer .counter { background: rgba(176, 196, 222, 0.1) !important; color: #b0c4de !important; box-shadow: 0 1px 3px rgba(176, 196, 222, 0.2) !important; }
+                .notification { background: rgba(25, 25, 50, 0.95) !important; border: 1px solid rgba(176, 196, 222, 0.3) !important; }
+                .notification-icon { color: #b0c4de !important; }
+                .notification-title { color: #b0c4de !important; }
+                .notification-message { color: #d3d3d3 !important; }
+                .notification-timer { background: #b0c4de !important; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function resetToDefaultStyle() {
+            // Reset to default Atlas theme with consistent colors
+            const menuContainer = document.getElementById('mainMenu');
+            const header = document.getElementById('menuHeader');
+            
+            if (menuContainer) {
+                menuContainer.style.background = 'rgba(0, 0, 0, 0.6)';
+                menuContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.05)';
+            }
+            
+            if (header) {
+                header.style.background = 'linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%)';
+                header.style.backgroundImage = `url("${bannerImageUrl}"), linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%)`;
+                header.style.backgroundSize = 'cover, cover';
+                header.style.backgroundPosition = 'center, center';
+                header.style.backgroundRepeat = 'no-repeat, no-repeat';
+            }
+            
+            // Reset scrollbar colors to Atlas theme
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            if (externalScrollbar) {
+                externalScrollbar.style.background = 'rgba(0, 0, 0, 0.6)';
+                externalScrollbar.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.05)';
+            }
+            
+            // Reset scrollbar indicator to Atlas theme
+            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
+            if (scrollbarIndicator) {
+                scrollbarIndicator.style.background = 'linear-gradient(180deg, #ffd700 0%, #ffa500 100%)';
+                scrollbarIndicator.style.boxShadow = '0 0 6px rgba(255, 215, 0, 0.8), 0 0 12px rgba(255, 215, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3)';
+                scrollbarIndicator.style.border = '1px solid rgba(255, 215, 0, 0.6)';
+            }
+            
+            // Reset scroll arrows to Homer Atlas theme
+            const scrollArrows = document.querySelectorAll('.scroll-arrow');
+            scrollArrows.forEach(arrow => {
+                arrow.style.color = 'rgba(255, 215, 0, 0.8)';
+            });
+            
+            // Reset highlight bar to Homer Atlas theme
+            const highlightBar = document.querySelector('.highlight-bar');
+            if (highlightBar) {
+                highlightBar.style.background = 'rgba(255, 215, 0, 0.15)';
+            }
+            
+            // Apply Homer Atlas default colors
+            const style = document.createElement('style');
+            style.textContent = `
+                .menu-item.selected .text { color: #ffd700 !important; }
+                .menu-item.selected .icon { color: #ffd700 !important; }
+                .menu-item.selected .arrow { color: #ffd700 !important; }
+                .toggle-item.selected .toggle-text { color: #ffd700 !important; }
+                .header-home-text { color: #ffd700 !important; }
+                .menu-footer .counter { background: rgba(255, 215, 0, 0.15) !important; color: #ffd700 !important; box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3) !important; }
+                .notification { background: rgba(25, 25, 25, 0.95) !important; border: 1px solid rgba(255, 215, 0, 0.4) !important; }
+                .notification-icon { color: #ffd700 !important; }
+                .notification-title { color: #ffd700 !important; }
+                .notification-message { color: #ffa500 !important; }
+                .notification-timer { background: #ffd700 !important; }
+            `;
+            document.head.appendChild(style);
+        }
+
         function navigateBack() {
             if (currentMenuType === 'self') {
                 currentMenuType = 'main';
-                headerText.textContent = menuData.main.title;
+                menuPath = ['HOME'];
+                updateBreadcrumb();
                 renderMenuItems(currentMenuType);
                 const selfIndex = menuData.main.items.findIndex(item => item.action === 'self');
                 updateSelection(selfIndex >= 0 ? selfIndex : 0, currentMenuType);
+                // Reset scroll position
+                const menuItems = document.getElementById('menuItemsContainer');
+                if (menuItems) menuItems.scrollTop = 0;
+                updateScrollbarIndicator();
+            } else if (currentMenuType === 'settings') {
+                currentMenuType = 'main';
+                menuPath = ['HOME'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                const settingsIndex = menuData.main.items.findIndex(item => item.action === 'settings');
+                updateSelection(settingsIndex >= 0 ? settingsIndex : 0, currentMenuType);
+                // Reset scroll position
+                const menuItems = document.getElementById('menuItemsContainer');
+                if (menuItems) menuItems.scrollTop = 0;
+                updateScrollbarIndicator();
+            } else if (currentMenuType === 'style') {
+                currentMenuType = 'settings';
+                menuPath = ['HOME', 'SETTINGS'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
                 // Reset scroll position
                 const menuItems = document.getElementById('menuItemsContainer');
                 if (menuItems) menuItems.scrollTop = 0;
@@ -746,16 +609,20 @@ html, body {
             
             const totalItems = currentItems.length;
             const scrollbarHeight = customScrollbar.clientHeight;
+            const indicatorHeight = 20; // Height of the indicator
             
             // Calculate indicator position based on current selection
             let indicatorPosition;
             if (totalItems === 1) {
-                indicatorPosition = scrollbarHeight / 2 - 3; // Center for single item
+                indicatorPosition = scrollbarHeight / 2 - indicatorHeight / 2; // Center for single item
             } else {
-                indicatorPosition = (currentIndex / (totalItems - 1)) * (scrollbarHeight - 6);
+                const maxScrollableDistance = scrollbarHeight - indicatorHeight;
+                indicatorPosition = (currentIndex / (totalItems - 1)) * maxScrollableDistance;
             }
             
-            scrollbarIndicator.style.top = Math.max(0, Math.min(indicatorPosition, scrollbarHeight - 6)) + 'px';
+            // Ensure the indicator stays within bounds
+            const clampedPosition = Math.max(0, Math.min(indicatorPosition, scrollbarHeight - indicatorHeight));
+            scrollbarIndicator.style.top = clampedPosition + 'px';
             scrollbarIndicator.style.display = 'block';
         }
 
@@ -779,10 +646,14 @@ html, body {
             scrollbarThumb.style.display = 'block';
             
             const thumbHeight = Math.max(15, (clientHeight / scrollHeight) * scrollbarHeight * 0.6);
-            const thumbTop = (scrollTop / (scrollHeight - clientHeight)) * (scrollbarHeight - thumbHeight);
+            const maxThumbTop = scrollbarHeight - thumbHeight;
+            const thumbTop = (scrollTop / (scrollHeight - clientHeight)) * maxThumbTop;
+            
+            // Ensure thumb stays within bounds
+            const clampedThumbTop = Math.max(0, Math.min(thumbTop, maxThumbTop));
             
             scrollbarThumb.style.height = thumbHeight + 'px';
-            scrollbarThumb.style.top = thumbTop + 'px';
+            scrollbarThumb.style.top = clampedThumbTop + 'px';
         }
         
         function initCustomScrollbar() {
@@ -790,11 +661,28 @@ html, body {
             const customScrollbar = document.querySelector('.custom-scrollbar');
             const scrollbarThumb = document.getElementById('customScrollbarThumb');
             const externalScrollbar = document.querySelector('.external-scrollbar');
+            const scrollArrowUp = document.querySelector('.scroll-arrow-up');
+            const scrollArrowDown = document.querySelector('.scroll-arrow-down');
             
             if (!menuItems || !customScrollbar || !scrollbarThumb || !externalScrollbar) return;
             
             // Update scrollbar on scroll
             menuItems.addEventListener('scroll', updateCustomScrollbar);
+            
+            // Handle scroll arrows
+            if (scrollArrowUp) {
+                scrollArrowUp.addEventListener('click', function() {
+                    menuItems.scrollTop -= 50;
+                    updateCustomScrollbar();
+                });
+            }
+            
+            if (scrollArrowDown) {
+                scrollArrowDown.addEventListener('click', function() {
+                    menuItems.scrollTop += 50;
+                    updateCustomScrollbar();
+                });
+            }
             
             // Handle scrollbar click
             externalScrollbar.addEventListener('click', function(e) {
@@ -839,11 +727,26 @@ html, body {
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM loaded, setting up menu...');
+            console.log('📸 Banner image URL:', bannerImageUrl);
+            
             renderMenuItems('main');
             updateSelection(0, 'main');
-            setHeaderImage(bannerImageUrl);
+            updateBreadcrumb();
             initCustomScrollbar();
             updateScrollbarIndicator();
+            
+            // Apply default Atlas style on load
+            resetToDefaultStyle();
+            
+            // Set header image immediately and with a fallback
+            setHeaderImage(bannerImageUrl);
+            
+            // Also try again after a short delay to ensure it loads
+            setTimeout(() => {
+                console.log('🔄 Retrying image load...');
+                setHeaderImage(bannerImageUrl);
+            }, 500);
         });
 
         window.addEventListener('message', function(event) {
@@ -858,7 +761,7 @@ html, body {
                 } else if (data.type === 'selectEffect') {
                     selectEffect(currentIndex, currentMenuType);
                 } else if (data.type === 'moveUp') {
-                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item');
                     if (currentItems.length > 0) {
                         currentIndex = (currentIndex - 1 + currentItems.length) % currentItems.length;
                         updateSelection(currentIndex, currentMenuType);
@@ -868,7 +771,7 @@ html, body {
                         }, 50);
                     }
                 } else if (data.type === 'moveDown') {
-                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item');
                     if (currentItems.length > 0) {
                         currentIndex = (currentIndex + 1) % currentItems.length;
                         updateSelection(currentIndex, currentMenuType);
