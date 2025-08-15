@@ -65,6 +65,16 @@
         let highlightBar = document.querySelector('.highlight-bar'); 
         const counterElement = document.getElementById('counter'); 
         const notificationContainer = document.getElementById('notificationContainer');
+        
+        // Draggable functionality variables
+        let isDraggingMenu = false;
+        let isDraggingSpectators = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let menuStartX = 0;
+        let menuStartY = 0;
+        let spectatorsStartX = 0;
+        let spectatorsStartY = 0;
 
         const menuData = {
             main: {
@@ -86,9 +96,9 @@
                 tabs: {
                     player: {
                         title: 'Player',
-                        items: [
-                            { name: "Noclip", action: "noclip_toggle", type: "toggle", checked: false },
-                        ]
+                items: [
+                    { name: "Noclip", action: "noclip_toggle", type: "toggle", checked: false },
+                ]
                     },
                                 miscellaneous: {
                 title: 'Miscellaneous',
@@ -112,13 +122,13 @@
                 tabs: {
                     main: {
                         title: 'Main',
-                        items: [
+                items: [
                             { name: "Default Style", icon: '<i class="fa-solid fa-palette"></i>', desc: "Default Homer Atlas Style", action: "default_style" },
-                        ]
-                    },
+                ]
+            },
                     server: {
                         title: 'Server',
-                        items: [
+                items: [
                             { name: "Resource", icon: '<i class="fa-solid fa-cube"></i>', desc: "Resource Management", action: "resource" },
                             { name: "Triggers", icon: '<i class="fa-solid fa-bolt"></i>', desc: "Server Triggers", action: "triggers" },
                         ]
@@ -126,6 +136,13 @@
                     settings: {
                         title: 'Settings',
                         items: []
+                    },
+                    design: {
+                        title: 'Design',
+                        items: [
+                            { name: "Menu Position", icon: '<i class="fa-solid fa-arrows-up-down-left-right"></i>', desc: "Drag to reposition main menu", action: "menu_position" },
+                            { name: "Spectators Position", icon: '<i class="fa-solid fa-eye"></i>', desc: "Drag to reposition spectators list", action: "spectators_position" }
+                        ]
                     }
                 }
             },
@@ -233,14 +250,14 @@
                 }
             } else {
                 // Regular menu rendering
-                currentMenuData.items.forEach((item, index) => {
-                    if (item.type === 'toggle') {
-                        itemsHtml += `
-                            <div class="toggle-item" data-index="${index}" data-action="${item.action}">
-                                <div class="toggle-text">${item.name}</div>
-                                <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
-                            </div>
-                        `;
+            currentMenuData.items.forEach((item, index) => {
+                if (item.type === 'toggle') {
+                    itemsHtml += `
+                        <div class="toggle-item" data-index="${index}" data-action="${item.action}">
+                            <div class="toggle-text">${item.name}</div>
+                            <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
+                        </div>
+                    `;
                     } else if (item.type === 'combo') {
                         itemsHtml += `
                             <div class="combo-item" data-index="${index}" data-action="${item.action}">
@@ -253,16 +270,16 @@
                                 </div>
                             </div>
                         `;
-                    } else {
-                        itemsHtml += `
-                            <div class="menu-item" data-index="${index}" data-action="${item.action}">
-                                <div class="icon">${item.icon}</div>
-                                <div class="text">${item.name}</div>
-                                <div class="arrow">»</div>
-                            </div>
-                        `;
-                    }
-                });
+                } else {
+                    itemsHtml += `
+                        <div class="menu-item" data-index="${index}" data-action="${item.action}">
+                            <div class="icon">${item.icon}</div>
+                            <div class="text">${item.name}</div>
+                            <div class="arrow">»</div>
+                        </div>
+                    `;
+                }
+            });
             }
             
             menuItemsContainer.innerHTML = itemsHtml;
@@ -300,11 +317,11 @@
 
                         // Handle different toggle actions
                         if (itemData.action === 'noclip_toggle') {
-                            showNotification(
-                                itemData.checked ? 'Noclip Activated' : 'Noclip Deactivated',
-                                itemData.checked ? 'Noclip mode enabled.' : 'Noclip mode disabled.',
-                                itemData.checked ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>'
-                            );
+                        showNotification(
+                            itemData.checked ? 'Noclip Activated' : 'Noclip Deactivated',
+                            itemData.checked ? 'Noclip mode enabled.' : 'Noclip mode disabled.',
+                            itemData.checked ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>'
+                        );
                         } else if (itemData.action === 'spectators_list') {
                             // Handle spectators list toggle
                             showNotification(
@@ -326,6 +343,174 @@
             });
 
             return renderedItems; 
+        }
+        
+        // Draggable functionality for menu and spectators list
+        function initDraggable() {
+            const spectatorsContainer = document.getElementById('spectatorsContainer');
+            
+            // Make main menu draggable
+            if (menuContainer) {
+                menuContainer.addEventListener('mousedown', startDragMenu);
+            }
+            
+            // Make spectators list draggable
+            if (spectatorsContainer) {
+                spectatorsContainer.addEventListener('mousedown', startDragSpectators);
+            }
+            
+            // Global mouse events
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+        
+        function startDragMenu(e) {
+            if (e.target.closest('.menu-items, .menu-footer, .scroll-arrow')) return; // Don't drag when clicking on interactive elements
+            
+            isDraggingMenu = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            
+            const rect = menuContainer.getBoundingClientRect();
+            menuStartX = rect.left;
+            menuStartY = rect.top;
+            
+            menuContainer.style.cursor = 'grabbing';
+            e.preventDefault();
+        }
+        
+        function startDragSpectators(e) {
+            if (e.target.closest('.spectators-list')) return; // Don't drag when clicking on list items
+            
+            isDraggingSpectators = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            
+            const rect = spectatorsContainer.getBoundingClientRect();
+            spectatorsStartX = rect.left;
+            spectatorsStartY = rect.top;
+            
+            spectatorsContainer.style.cursor = 'grabbing';
+            e.preventDefault();
+        }
+        
+        function onMouseMove(e) {
+            if (isDraggingMenu) {
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                const newX = menuStartX + deltaX;
+                const newY = menuStartY + deltaY;
+                
+                // Keep menu within screen bounds
+                const maxX = window.innerWidth - menuContainer.offsetWidth;
+                const maxY = window.innerHeight - menuContainer.offsetHeight;
+                
+                const clampedX = Math.max(0, Math.min(newX, maxX));
+                const clampedY = Math.max(0, Math.min(newY, maxY));
+                
+                menuContainer.style.position = 'fixed';
+                menuContainer.style.left = clampedX + 'px';
+                menuContainer.style.top = clampedY + 'px';
+                menuContainer.style.transform = 'none';
+                
+                // Update external scrollbar position
+                const externalScrollbar = document.querySelector('.external-scrollbar');
+                if (externalScrollbar) {
+                    externalScrollbar.style.position = 'fixed';
+                    externalScrollbar.style.left = (clampedX + menuContainer.offsetWidth + 16) + 'px';
+                    externalScrollbar.style.top = (clampedY + 168) + 'px';
+                    externalScrollbar.style.transform = 'none';
+                }
+            }
+            
+            if (isDraggingSpectators) {
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                const newX = spectatorsStartX + deltaX;
+                const newY = spectatorsStartY + deltaY;
+                
+                // Keep spectators list within screen bounds
+                const maxX = window.innerWidth - spectatorsContainer.offsetWidth;
+                const maxY = window.innerHeight - spectatorsContainer.offsetHeight;
+                
+                const clampedX = Math.max(0, Math.min(newX, maxX));
+                const clampedY = Math.max(0, Math.min(newY, maxY));
+                
+                spectatorsContainer.style.position = 'fixed';
+                spectatorsContainer.style.left = clampedX + 'px';
+                spectatorsContainer.style.top = clampedY + 'px';
+                spectatorsContainer.style.transform = 'none';
+            }
+        }
+        
+        function onMouseUp() {
+            if (isDraggingMenu) {
+                isDraggingMenu = false;
+                menuContainer.style.cursor = 'grab';
+                
+                // Save position to localStorage
+                const rect = menuContainer.getBoundingClientRect();
+                localStorage.setItem('menuPosition', JSON.stringify({
+                    x: rect.left,
+                    y: rect.top
+                }));
+            }
+            
+            if (isDraggingSpectators) {
+                isDraggingSpectators = false;
+                spectatorsContainer.style.cursor = 'grab';
+                
+                // Save position to localStorage
+                const rect = spectatorsContainer.getBoundingClientRect();
+                localStorage.setItem('spectatorsPosition', JSON.stringify({
+                    x: rect.left,
+                    y: rect.top
+                }));
+            }
+        }
+        
+        // Load saved positions
+        function loadSavedPositions() {
+            // Load menu position
+            const savedMenuPos = localStorage.getItem('menuPosition');
+            if (savedMenuPos) {
+                try {
+                    const pos = JSON.parse(savedMenuPos);
+                    menuContainer.style.position = 'fixed';
+                    menuContainer.style.left = pos.x + 'px';
+                    menuContainer.style.top = pos.y + 'px';
+                    menuContainer.style.transform = 'none';
+                    
+                    // Update external scrollbar position
+                    const externalScrollbar = document.querySelector('.external-scrollbar');
+                    if (externalScrollbar) {
+                        externalScrollbar.style.left = (pos.x + menuContainer.offsetWidth + 16) + 'px';
+                        externalScrollbar.style.top = (pos.y + 168) + 'px';
+                        externalScrollbar.style.transform = 'none';
+                    }
+                } catch (e) {
+                    console.log('Failed to load menu position');
+                }
+            }
+            
+            // Load spectators position
+            const savedSpectatorsPos = localStorage.getItem('spectatorsPosition');
+            if (savedSpectatorsPos) {
+                try {
+                    const pos = JSON.parse(savedSpectatorsPos);
+                    const spectatorsContainer = document.getElementById('spectatorsContainer');
+                    if (spectatorsContainer) {
+                        spectatorsContainer.style.position = 'fixed';
+                        spectatorsContainer.style.left = pos.x + 'px';
+                        spectatorsContainer.style.top = pos.y + 'px';
+                        spectatorsContainer.style.transform = 'none';
+                    }
+                } catch (e) {
+                    console.log('Failed to load spectators position');
+                }
+            }
         }
 
         function setHeaderImage(imageUrl) {
@@ -529,6 +714,10 @@
             } else if (selectedOption.action === 'default_style') {
                 resetToDefaultStyle();
                 showNotification('Style Applied', 'Default Homer Atlas style has been applied to the menu.', 3000, "success");
+            } else if (selectedOption.action === 'menu_position') {
+                showNotification('Menu Position', 'Click and drag the menu header to reposition it anywhere on screen!', '<i class="fa-solid fa-arrows-up-down-left-right"></i>');
+            } else if (selectedOption.action === 'spectators_position') {
+                showNotification('Spectators Position', 'Click and drag the spectators list header to reposition it anywhere on screen!', '<i class="fa-solid fa-eye"></i>');
             } else if (selectedOption.action === 'resource') {
                 // This will be handled by Lua navigation tracking
                 // The resources will be populated via MachoSendDuiMessage
@@ -846,6 +1035,12 @@
                 console.log('🔄 Retrying image load...');
                 setHeaderImage(bannerImageUrl);
             }, 500);
+            
+            // Initialize draggable functionality
+            initDraggable();
+            
+            // Load saved positions
+            loadSavedPositions();
         });
 
         window.addEventListener('message', function(event) {
