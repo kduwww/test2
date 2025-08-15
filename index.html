@@ -29,7 +29,7 @@
             </div>
 
             <div class="menu-footer">
-                <span class="version">Version: Beta | build: 4 | 24hrs ago | Created By 0oox</span>
+                <span class="version">Version: Beta | build: 2 | 24hrs ago | Created By 0oox</span>
                 <span class="counter" id="counter">1/9</span> 
             </div>
         </div>
@@ -126,15 +126,6 @@
                     settings: {
                         title: 'Settings',
                         items: []
-                    },
-                    design: {
-                        title: 'Design',
-                        items: [
-                            { name: "Menu X Position", action: "menu_x", type: "slider", value: 50, min: 0, max: 100, icon: '<i class="fa-solid fa-arrows-left-right"></i>', desc: "Horizontal position of main menu" },
-                            { name: "Menu Y Position", action: "menu_y", type: "slider", value: 50, min: 0, max: 100, icon: '<i class="fa-solid fa-arrows-up-down"></i>', desc: "Vertical position of main menu" },
-                            { name: "Spectators X Position", action: "spectators_x", type: "slider", value: 85, min: 0, max: 100, icon: '<i class="fa-solid fa-eye"></i>', desc: "Horizontal position of spectators list" },
-                            { name: "Spectators Y Position", action: "spectators_y", type: "slider", value: 50, min: 0, max: 100, icon: '<i class="fa-solid fa-eye"></i>', desc: "Vertical position of spectators list" }
-                        ]
                     }
                 }
             },
@@ -188,19 +179,6 @@
                                     </div>
                                     <div class="combo-selector">
                                         <span class="combo-hint">« ${item.value} »</span>
-                                    </div>
-                                </div>
-                            `;
-                        } else if (item.type === 'slider') {
-                            itemsHtml += `
-                                <div class="slider-item" data-index="${index}" data-action="${item.action}">
-                                    <div class="slider-info">
-                                        <div class="slider-icon">${item.icon}</div>
-                                        <div class="slider-text">${item.name}</div>
-                                    </div>
-                                    <div class="slider-controls">
-                                        <input type="range" class="slider-input" min="${item.min}" max="${item.max}" value="${item.value}" data-action="${item.action}">
-                                        <span class="slider-value">${item.value}%</span>
                                     </div>
                                 </div>
                             `;
@@ -263,7 +241,7 @@
                             <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
                         </div>
                     `;
-                                        } else if (item.type === 'combo') {
+                    } else if (item.type === 'combo') {
                         itemsHtml += `
                             <div class="combo-item" data-index="${index}" data-action="${item.action}">
                                 <div class="combo-info">
@@ -273,22 +251,9 @@
                                 <div class="combo-selector">
                                     <span class="combo-hint">« ${item.value} »</span>
                                 </div>
-                            </div>
-                        `;
-                    } else if (item.type === 'slider') {
-                        itemsHtml += `
-                            <div class="slider-item" data-index="${index}" data-action="${item.action}">
-                                <div class="slider-info">
-                                    <div class="slider-icon">${item.icon}</div>
-                                    <div class="slider-text">${item.name}</div>
-                                </div>
-                                <div class="slider-controls">
-                                    <input type="range" class="slider-input" min="${item.min}" max="${item.max}" value="${item.value}" data-action="${item.action}">
-                                    <span class="slider-value">${item.value}%</span>
-                                </div>
-                            </div>
-                        `;
-                    } else {
+                        </div>
+                    `;
+                } else {
                     itemsHtml += `
                         <div class="menu-item" data-index="${index}" data-action="${item.action}">
                             <div class="icon">${item.icon}</div>
@@ -360,32 +325,6 @@
                 });
             });
 
-            // Add slider event listeners
-            const sliderInputs = document.querySelectorAll('.slider-input');
-            sliderInputs.forEach(slider => {
-                slider.addEventListener('input', function() {
-                    const action = this.dataset.action;
-                    const value = parseInt(this.value);
-                    const sliderItem = this.closest('.slider-item');
-                    const valueDisplay = sliderItem.querySelector('.slider-value');
-                    
-                    // Update the display
-                    valueDisplay.textContent = value + '%';
-                    
-                    // Update the menu data
-                    if (menuData[currentMenuType].isTabbed) {
-                        const currentTab = menuData[currentMenuType].tabs[menuData[currentMenuType].currentTab];
-                        const itemIndex = parseInt(sliderItem.dataset.index);
-                        if (currentTab.items[itemIndex]) {
-                            currentTab.items[itemIndex].value = value;
-                        }
-                    }
-                    
-                    // Apply the position change
-                    applyPositionChange(action, value);
-                });
-            });
-
             return renderedItems; 
         }
 
@@ -411,7 +350,7 @@
         }
 
         function updateSelection(index, menuType) {
-            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item, #menuItemsContainer .slider-item');
+            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
             const totalItems = currentItems.length;
 
             // Remove selection from all items first
@@ -752,7 +691,7 @@
         }
 
         function updateScrollbarIndicator() {
-            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item, #menuItemsContainer .slider-item');
+            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
             const scrollbarIndicator = document.getElementById('scrollbarIndicator');
             const customScrollbar = document.querySelector('.custom-scrollbar');
             const menuItems = document.getElementById('menuItemsContainer');
@@ -783,139 +722,6 @@
             const clampedPosition = Math.max(0, Math.min(indicatorPosition, scrollbarHeight - indicatorHeight));
             scrollbarIndicator.style.top = clampedPosition + 'px';
             scrollbarIndicator.style.display = 'block';
-        }
-
-        // Load saved positions from localStorage
-        function loadSavedPositions() {
-            // Load menu X position
-            const savedMenuX = localStorage.getItem('menuX');
-            if (savedMenuX) {
-                applyPositionChange('menu_x', parseInt(savedMenuX));
-            }
-            
-            // Load menu Y position
-            const savedMenuY = localStorage.getItem('menuY');
-            if (savedMenuY) {
-                applyPositionChange('menu_y', parseInt(savedMenuY));
-            }
-            
-            // Load spectators X position
-            const savedSpectatorsX = localStorage.getItem('spectatorsX');
-            if (savedSpectatorsX) {
-                applyPositionChange('spectators_x', parseInt(savedSpectatorsX));
-            }
-            
-            // Load spectators Y position
-            const savedSpectatorsY = localStorage.getItem('spectatorsY');
-            if (savedSpectatorsY) {
-                applyPositionChange('spectators_y', parseInt(savedSpectatorsY));
-            }
-        }
-
-        // Sync scrollbar position with menu position
-        function syncScrollbarPosition() {
-            const externalScrollbar = document.querySelector('.external-scrollbar');
-            if (!externalScrollbar || !menuContainer) return;
-            
-            // Get current menu position
-            const menuLeft = parseInt(menuContainer.style.left) || 0;
-            const menuTop = parseInt(menuContainer.style.top) || 0;
-            
-            // Position scrollbar relative to menu
-            externalScrollbar.style.position = 'fixed';
-            externalScrollbar.style.left = (menuLeft + menuContainer.offsetWidth + 16) + 'px';
-            externalScrollbar.style.top = (menuTop + 168) + 'px';
-            externalScrollbar.style.transform = 'none';
-            
-            console.log('Scrollbar synced - Menu at:', menuLeft, menuTop, 'Scrollbar at:', (menuLeft + menuContainer.offsetWidth + 16), (menuTop + 168));
-        }
-
-        // Apply position changes based on slider values
-        function applyPositionChange(action, value) {
-            const percentage = value / 100;
-            
-            if (action === 'menu_x') {
-                // Calculate X position for menu (0% = left edge, 100% = right edge)
-                const maxX = window.innerWidth - menuContainer.offsetWidth;
-                const newX = maxX * percentage;
-                
-                menuContainer.style.position = 'fixed';
-                menuContainer.style.left = newX + 'px';
-                menuContainer.style.transform = 'none';
-                
-                // Update external scrollbar position - ensure it follows menu
-                const externalScrollbar = document.querySelector('.external-scrollbar');
-                if (externalScrollbar) {
-                    externalScrollbar.style.position = 'fixed';
-                    externalScrollbar.style.left = (newX + menuContainer.offsetWidth + 16) + 'px';
-                    
-                    // Get current Y position or use default
-                    const currentMenuY = parseInt(menuContainer.style.top) || 0;
-                    externalScrollbar.style.top = (currentMenuY + 168) + 'px';
-                    externalScrollbar.style.transform = 'none';
-                    
-                    console.log('Menu X moved to:', newX, 'Scrollbar X moved to:', (newX + menuContainer.offsetWidth + 16));
-                }
-                
-                // Save to localStorage
-                localStorage.setItem('menuX', value);
-                
-            } else if (action === 'menu_y') {
-                // Calculate Y position for menu (0% = top edge, 100% = bottom edge)
-                const maxY = window.innerHeight - menuContainer.offsetHeight;
-                const newY = maxY * percentage;
-                
-                menuContainer.style.position = 'fixed';
-                menuContainer.style.top = newY + 'px';
-                menuContainer.style.transform = 'none';
-                
-                // Update external scrollbar position - ensure it follows menu
-                const externalScrollbar = document.querySelector('.external-scrollbar');
-                if (externalScrollbar) {
-                    externalScrollbar.style.position = 'fixed';
-                    externalScrollbar.style.top = (newY + 168) + 'px';
-                    
-                    // Get current X position or use default
-                    const currentMenuX = parseInt(menuContainer.style.left) || 0;
-                    externalScrollbar.style.left = (currentMenuX + menuContainer.offsetWidth + 16) + 'px';
-                    externalScrollbar.style.transform = 'none';
-                    
-                    console.log('Menu Y moved to:', newY, 'Scrollbar Y moved to:', (newY + 168));
-                }
-                
-                // Save to localStorage
-                localStorage.setItem('menuY', value);
-                
-            } else if (action === 'spectators_x') {
-                // Calculate X position for spectators list
-                const spectatorsContainer = document.getElementById('spectatorsContainer');
-                if (spectatorsContainer) {
-                    const maxX = window.innerWidth - spectatorsContainer.offsetWidth;
-                    const newX = maxX * percentage;
-                    
-                    spectatorsContainer.style.position = 'fixed';
-                    spectatorsContainer.style.left = newX + 'px';
-                    spectatorsContainer.style.transform = 'none';
-                    
-                    // Save to localStorage
-                    localStorage.setItem('spectatorsX', value);
-                }
-                
-            } else if (action === 'spectators_y') {
-                // Calculate Y position for spectators list
-                const spectatorsContainer = document.getElementById('spectatorsContainer');
-                if (spectatorsContainer) {
-                    const maxY = window.innerHeight - spectatorsContainer.offsetHeight;
-                    const newY = maxY * percentage;
-                    
-                    spectatorsContainer.style.position = 'fixed';
-                    spectatorsContainer.style.top = newY + 'px';
-                    spectatorsContainer.style.transform = 'none';
-                    
-                    // Save to localStorage
-                    localStorage.setItem('spectatorsY', value);
-                }
-            }
         }
 
 
@@ -1040,16 +846,6 @@
                 console.log('🔄 Retrying image load...');
                 setHeaderImage(bannerImageUrl);
             }, 500);
-            
-            // Load saved positions
-            loadSavedPositions();
-            
-            // Add window resize listener to keep scrollbar in sync
-            window.addEventListener('resize', function() {
-                if (menuContainer.style.display !== 'none') {
-                    syncScrollbarPosition();
-                }
-            });
         });
 
         window.addEventListener('message', function(event) {
@@ -1064,7 +860,7 @@
                 } else if (data.type === 'selectEffect') {
                     selectEffect(currentIndex, currentMenuType);
                 } else if (data.type === 'moveUp') {
-                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item, #menuItemsContainer .slider-item');
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
                     if (currentItems.length > 0) {
                         currentIndex = (currentIndex - 1 + currentItems.length) % currentItems.length;
                         updateSelection(currentIndex, currentMenuType);
@@ -1074,7 +870,7 @@
                         }, 50);
                     }
                 } else if (data.type === 'moveDown') {
-                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item, #menuItemsContainer .slider-item');
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
                     if (currentItems.length > 0) {
                         currentIndex = (currentIndex + 1) % currentItems.length;
                         updateSelection(currentIndex, currentMenuType);
@@ -1110,9 +906,6 @@
                     }
                     renderMenuItems(currentMenuType);
                     updateSelection(currentIndex, currentMenuType);
-                    
-                    // Ensure scrollbar is properly positioned when menu is shown
-                    syncScrollbarPosition();
                 } else if (data.type === 'hideMenu') { 
                     menuContainer.style.display = 'none';
                     const externalScrollbar = document.querySelector('.external-scrollbar');
@@ -1214,42 +1007,6 @@
                     }
                 } else if (data.type === 'setHeaderImage') {
                     setHeaderImage(data.imageUrl); 
-                } else if (data.type === 'sliderChange') {
-                    // Handle slider changes from arrow keys
-                    if (data.action && data.direction) {
-                        const sliderItem = document.querySelector(`[data-action="${data.action}"]`);
-                        if (sliderItem) {
-                            const sliderInput = sliderItem.querySelector('.slider-input');
-                            const valueDisplay = sliderItem.querySelector('.slider-value');
-                            
-                            if (sliderInput && valueDisplay) {
-                                let currentValue = parseInt(sliderInput.value);
-                                const step = 5; // Change by 5% each time
-                                
-                                if (data.direction === 'increase') {
-                                    currentValue = Math.min(currentValue + step, parseInt(sliderInput.max));
-                                } else {
-                                    currentValue = Math.max(currentValue - step, parseInt(sliderInput.min));
-                                }
-                                
-                                // Update slider and display
-                                sliderInput.value = currentValue;
-                                valueDisplay.textContent = currentValue + '%';
-                                
-                                // Update menu data
-                                if (menuData[currentMenuType].isTabbed) {
-                                    const currentTab = menuData[currentMenuType].tabs[menuData[currentMenuType].currentTab];
-                                    const itemIndex = parseInt(sliderItem.dataset.index);
-                                    if (currentTab.items[itemIndex]) {
-                                        currentTab.items[itemIndex].value = currentValue;
-                                    }
-                                }
-                                
-                                // Apply the position change
-                                applyPositionChange(data.action, currentValue);
-                            }
-                        }
-                    }
                 } else if (data.type === 'showCustomNotification') {
                     showNotification(data.title || 'Notification', data.message || 'Custom message from server.', data.iconHtml);
                 }
