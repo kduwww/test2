@@ -523,3 +523,61 @@ html, body {
     font-style: italic;
 }
 
+/* Resource menu styles */
+.resource-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    min-height: 45px;
+    transition: none;
+    z-index: 2;
+}
+
+.resource-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.resource-name {
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.resource-status {
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.resource-controls {
+    display: flex;
+    align-items: center;
+}
+
+.control-hint {
+    font-family: 'Roboto', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: #888888;
+    font-style: italic;
+}
+
+.resource-item.selected .resource-name {
+    color: #ffd700;
+}
+
+.resource-item.selected .control-hint {
+    color: #ffa500;
+}
+
