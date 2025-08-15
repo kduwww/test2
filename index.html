@@ -446,8 +446,11 @@
             const spectatorsList = document.getElementById('spectatorsList');
             if (!spectatorsList) return;
 
+            console.log('Populating spectators list with', spectators.length, 'players');
+
             if (spectators.length === 0) {
                 spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">No invisible players</span></div></div>';
+                console.log('Spectators list cleared - no players detected');
                 return;
             }
 
