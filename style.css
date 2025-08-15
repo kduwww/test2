@@ -666,8 +666,20 @@ html, body {
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-    z-index: 1000;
+    z-index: 9999;
     font-family: 'Roboto', sans-serif;
+    /* Ensure it stays visible */
+    pointer-events: auto;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Force visibility when always-visible attribute is set */
+.spectators-container[data-always-visible="true"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
 }
 
 .spectators-header {

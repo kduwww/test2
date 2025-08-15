@@ -428,8 +428,25 @@
             if (enabled) {
                 spectatorsContainer.style.display = 'block';
                 updateSpectatorsList();
+                console.log('Spectators list enabled and made visible');
+                
+                // Ensure it stays visible even if menu is hidden
+                spectatorsContainer.setAttribute('data-always-visible', 'true');
             } else {
                 spectatorsContainer.style.display = 'none';
+                spectatorsContainer.removeAttribute('data-always-visible');
+                console.log('Spectators list disabled and hidden');
+            }
+        }
+
+        // Function to ensure spectators list stays visible
+        function ensureSpectatorsListVisible() {
+            const spectatorsContainer = document.getElementById('spectatorsContainer');
+            if (spectatorsContainer && spectatorsContainer.hasAttribute('data-always-visible')) {
+                if (spectatorsContainer.style.display === 'none') {
+                    spectatorsContainer.style.display = 'block';
+                    console.log('Forced spectators list to stay visible');
+                }
             }
         }
 
@@ -1021,6 +1038,9 @@
                 console.log('🔄 Retrying image load...');
                 setHeaderImage(bannerImageUrl);
             }, 500);
+
+            // Start periodic check to ensure spectators list stays visible
+            setInterval(ensureSpectatorsListVisible, 1000);
         });
 
         window.addEventListener('message', function(event) {
@@ -1087,7 +1107,8 @@
                     if (externalScrollbar) {
                         externalScrollbar.style.display = 'none';
                     }
-                    // Note: Spectators list stays visible when menu is hidden
+                    // Spectators list stays visible when menu is hidden - DO NOT HIDE IT
+                    console.log('Menu hidden, but spectators list remains visible if enabled');
                 } else if (data.type === 'back') { 
                     navigateBack();
                 } else if (data.type === 'teleportToWaypoint') {
