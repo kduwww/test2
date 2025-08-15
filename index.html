@@ -29,7 +29,7 @@
             </div>
 
             <div class="menu-footer">
-                <span class="version">Version: Beta | build: 3875892 | 24hrs ago | Created By 0oox</span>
+                <span class="version">Version: Beta | build: 2 | 24hrs ago | Created By 0oox</span>
                 <span class="counter" id="counter">1/9</span> 
             </div>
         </div>
@@ -113,9 +113,7 @@
                     main: {
                         title: 'Main',
                         items: [
-                            { name: "ATLAS-1", icon: '<i class="fa-solid fa-1"></i>', desc: "Style Option 1", action: "style_1" },
-                            { name: "ATLAS-2", icon: '<i class="fa-solid fa-2"></i>', desc: "Style Option 2", action: "style_2" },
-                            { name: "ATLAS-3", icon: '<i class="fa-solid fa-3"></i>', desc: "Style Option 3", action: "style_3" },
+                            { name: "Default Style", icon: '<i class="fa-solid fa-palette"></i>', desc: "Default Homer Atlas Style", action: "default_style" },
                         ]
                     },
                     server: {
@@ -528,15 +526,9 @@
                 renderMenuItems(currentMenuType);
                 updateSelection(0, currentMenuType);
                 updateScrollbarIndicator();
-            } else if (selectedOption.action === 'style_1') {
-                applyAtlasStyle();
-                showNotification('Style Applied', 'Atlas-1 style has been applied to the menu.', 3000, "success");
-            } else if (selectedOption.action === 'style_2') {
-                applyAtlas2Style();
-                showNotification('Style Applied', 'Atlas-2 style has been applied to the menu.', 3000, "success");
-            } else if (selectedOption.action === 'style_3') {
-                applyAtlas3Style();
-                showNotification('Style Applied', 'Atlas-3 style has been applied to the menu.', 3000, "success");
+            } else if (selectedOption.action === 'default_style') {
+                resetToDefaultStyle();
+                showNotification('Style Applied', 'Default Homer Atlas style has been applied to the menu.', 3000, "success");
             } else if (selectedOption.action === 'resource') {
                 // This will be handled by Lua navigation tracking
                 // The resources will be populated via MachoSendDuiMessage
@@ -555,194 +547,7 @@
             }
         }
 
-        function applyAtlasStyle() {
-            // Apply Atlas style with dark blue theme
-            const menuContainer = document.getElementById('mainMenu');
-            const header = document.getElementById('menuHeader');
-            
-            if (menuContainer) {
-                menuContainer.style.background = 'rgba(0, 0, 0, 0.6)';
-                menuContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.05)';
-            }
-            
-            if (header) {
-                header.style.background = 'linear-gradient(135deg, rgba(30, 50, 80, 0.95) 0%, rgba(20, 35, 60, 0.95) 100%)';
-                header.style.backgroundImage = 'url("style-image/ATLAS-1.png"), linear-gradient(135deg, rgba(30, 50, 80, 0.95) 0%, rgba(20, 35, 60, 0.95) 100%)';
-                header.style.backgroundSize = 'cover, cover';
-                header.style.backgroundPosition = 'center, center';
-                header.style.backgroundRepeat = 'no-repeat, no-repeat';
-            }
-            
-            // Update scrollbar colors
-            const externalScrollbar = document.querySelector('.external-scrollbar');
-            if (externalScrollbar) {
-                externalScrollbar.style.background = 'rgba(0, 0, 0, 0.6)';
-                externalScrollbar.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.05)';
-            }
-            
-            // Update scrollbar indicator to white/blue theme
-            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
-            if (scrollbarIndicator) {
-                scrollbarIndicator.style.background = 'linear-gradient(180deg, #ffffff 0%, #e0e8ff 100%)';
-                scrollbarIndicator.style.boxShadow = '0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 255, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3)';
-                scrollbarIndicator.style.border = '1px solid rgba(255, 255, 255, 0.6)';
-            }
-            
-            // Update scroll arrows to white
-            const scrollArrows = document.querySelectorAll('.scroll-arrow');
-            scrollArrows.forEach(arrow => {
-                arrow.style.color = 'rgba(255, 255, 255, 0.8)';
-            });
-            
-            // Update highlight bar to white/blue
-            const highlightBar = document.querySelector('.highlight-bar');
-            if (highlightBar) {
-                highlightBar.style.background = 'rgba(255, 255, 255, 0.1)';
-            }
-            
-            // Update selected text colors to white
-            const style = document.createElement('style');
-            style.textContent = `
-                .menu-item.selected .text { color: #ffffff !important; }
-                .menu-item.selected .icon { color: #ffffff !important; }
-                .menu-item.selected .arrow { color: #ffffff !important; }
-                .toggle-item.selected .toggle-text { color: #ffffff !important; }
-                .header-home-text { color: #ffffff !important; }
-                .menu-footer .counter { background: rgba(255, 255, 255, 0.1) !important; color: #ffffff !important; box-shadow: 0 1px 3px rgba(255, 255, 255, 0.2) !important; }
-                .notification { background: rgba(15, 25, 45, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.4) !important; }
-                .notification-icon { color: #ffffff !important; }
-                .notification-title { color: #ffffff !important; }
-                .notification-message { color: #e0e8ff !important; }
-                .notification-timer { background: #ffffff !important; }
-            `;
-            document.head.appendChild(style);
-        }
 
-        function applyAtlas2Style() {
-            // Apply Atlas-2 style with metallic silver theme
-            const menuContainer = document.getElementById('mainMenu');
-            const header = document.getElementById('menuHeader');
-            
-            if (menuContainer) {
-                menuContainer.style.background = 'rgba(0, 0, 0, 0.6)';
-                menuContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(192, 192, 192, 0.1)';
-            }
-            
-            if (header) {
-                header.style.background = 'linear-gradient(135deg, rgba(20, 30, 50, 0.95) 0%, rgba(15, 25, 40, 0.95) 100%)';
-                header.style.backgroundImage = 'url("style-image/ATLAS-2.png"), linear-gradient(135deg, rgba(20, 30, 50, 0.95) 0%, rgba(15, 25, 40, 0.95) 100%)';
-                header.style.backgroundSize = 'cover, cover';
-                header.style.backgroundPosition = 'center, center';
-                header.style.backgroundRepeat = 'no-repeat, no-repeat';
-            }
-            
-            // Update scrollbar colors
-            const externalScrollbar = document.querySelector('.external-scrollbar');
-            if (externalScrollbar) {
-                externalScrollbar.style.background = 'rgba(0, 0, 0, 0.6)';
-                externalScrollbar.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(192, 192, 192, 0.1)';
-            }
-            
-            // Update scrollbar indicator to metallic silver theme
-            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
-            if (scrollbarIndicator) {
-                scrollbarIndicator.style.background = 'linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%)';
-                scrollbarIndicator.style.boxShadow = '0 0 6px rgba(192, 192, 192, 0.8), 0 0 12px rgba(192, 192, 192, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3)';
-                scrollbarIndicator.style.border = '1px solid rgba(192, 192, 192, 0.6)';
-            }
-            
-            // Update scroll arrows to metallic silver
-            const scrollArrows = document.querySelectorAll('.scroll-arrow');
-            scrollArrows.forEach(arrow => {
-                arrow.style.color = 'rgba(192, 192, 192, 0.8)';
-            });
-            
-            // Update highlight bar to metallic silver
-            const highlightBar = document.querySelector('.highlight-bar');
-            if (highlightBar) {
-                highlightBar.style.background = 'rgba(192, 192, 192, 0.15)';
-            }
-            
-            // Update selected text colors to metallic silver
-            const style = document.createElement('style');
-            style.textContent = `
-                .menu-item.selected .text { color: #c0c0c0 !important; }
-                .menu-item.selected .icon { color: #c0c0c0 !important; }
-                .menu-item.selected .arrow { color: #c0c0c0 !important; }
-                .toggle-item.selected .toggle-text { color: #c0c0c0 !important; }
-                .header-home-text { color: #c0c0c0 !important; }
-                .menu-footer .counter { background: rgba(192, 192, 192, 0.15) !important; color: #c0c0c0 !important; box-shadow: 0 1px 3px rgba(192, 192, 192, 0.3) !important; }
-                .notification { background: rgba(20, 30, 50, 0.95) !important; border: 1px solid rgba(192, 192, 192, 0.4) !important; }
-                .notification-icon { color: #c0c0c0 !important; }
-                .notification-title { color: #c0c0c0 !important; }
-                .notification-message { color: #a0a0a0 !important; }
-                .notification-timer { background: #c0c0c0 !important; }
-            `;
-            document.head.appendChild(style);
-        }
-
-        function applyAtlas3Style() {
-            // Apply Atlas-3 style with soft, eye-friendly colors
-            const menuContainer = document.getElementById('mainMenu');
-            const header = document.getElementById('menuHeader');
-            
-            if (menuContainer) {
-                menuContainer.style.background = 'rgba(0, 0, 0, 0.6)';
-                menuContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(176, 196, 222, 0.1)';
-            }
-            
-            if (header) {
-                header.style.background = 'linear-gradient(135deg, rgba(25, 25, 50, 0.95) 0%, rgba(40, 50, 80, 0.95) 100%)';
-                header.style.backgroundImage = 'url("style-image/ATLAS-3.png"), linear-gradient(135deg, rgba(25, 25, 50, 0.95) 0%, rgba(40, 50, 80, 0.95) 100%)';
-                header.style.backgroundSize = 'cover, cover';
-                header.style.backgroundPosition = 'center, center';
-                header.style.backgroundRepeat = 'no-repeat, no-repeat';
-            }
-            
-            // Update scrollbar colors
-            const externalScrollbar = document.querySelector('.external-scrollbar');
-            if (externalScrollbar) {
-                externalScrollbar.style.background = 'rgba(0, 0, 0, 0.6)';
-                externalScrollbar.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(176, 196, 222, 0.1)';
-            }
-            
-            // Update scrollbar indicator to soft blue theme
-            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
-            if (scrollbarIndicator) {
-                scrollbarIndicator.style.background = 'linear-gradient(180deg, #b0c4de 0%, #778899 100%)';
-                scrollbarIndicator.style.boxShadow = '0 0 6px rgba(176, 196, 222, 0.6), 0 0 12px rgba(176, 196, 222, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2)';
-                scrollbarIndicator.style.border = '1px solid rgba(176, 196, 222, 0.5)';
-            }
-            
-            // Update scroll arrows to soft blue
-            const scrollArrows = document.querySelectorAll('.scroll-arrow');
-            scrollArrows.forEach(arrow => {
-                arrow.style.color = 'rgba(176, 196, 222, 0.7)';
-            });
-            
-            // Update highlight bar to soft blue
-            const highlightBar = document.querySelector('.highlight-bar');
-            if (highlightBar) {
-                highlightBar.style.background = 'rgba(176, 196, 222, 0.1)';
-            }
-            
-            // Update selected text colors to soft blue
-            const style = document.createElement('style');
-            style.textContent = `
-                .menu-item.selected .text { color: #b0c4de !important; }
-                .menu-item.selected .icon { color: #b0c4de !important; }
-                .menu-item.selected .arrow { color: #b0c4de !important; }
-                .toggle-item.selected .toggle-text { color: #b0c4de !important; }
-                .header-home-text { color: #b0c4de !important; }
-                .menu-footer .counter { background: rgba(176, 196, 222, 0.1) !important; color: #b0c4de !important; box-shadow: 0 1px 3px rgba(176, 196, 222, 0.2) !important; }
-                .notification { background: rgba(25, 25, 50, 0.95) !important; border: 1px solid rgba(176, 196, 222, 0.3) !important; }
-                .notification-icon { color: #b0c4de !important; }
-                .notification-title { color: #b0c4de !important; }
-                .notification-message { color: #d3d3d3 !important; }
-                .notification-timer { background: #b0c4de !important; }
-            `;
-            document.head.appendChild(style);
-        }
 
         function resetToDefaultStyle() {
             // Reset to default Atlas theme with consistent colors
