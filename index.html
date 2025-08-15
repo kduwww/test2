@@ -38,6 +38,20 @@
     <div class="notification-container" id="notificationContainer">
     </div>
 
+    <!-- Spectators List UI -->
+    <div class="spectators-container" id="spectatorsContainer" style="display: none;">
+        <div class="spectators-header">
+            <div class="spectators-icon">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+            <div class="spectators-title">Spectators</div>
+        </div>
+        <div class="spectators-separator"></div>
+        <div class="spectators-list" id="spectatorsList">
+            <!-- Spectator names will be populated here -->
+        </div>
+    </div>
+
     <script>
         const bannerImageUrl = 'style-image/Atlas.png'; // Default Homer Atlas header image 
 
@@ -76,12 +90,13 @@
                             { name: "Noclip", action: "noclip_toggle", type: "toggle", checked: false },
                         ]
                     },
-                    miscellaneous: {
-                        title: 'Miscellaneous',
-                        items: [
-                            { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
-                        ]
-                    },
+                                miscellaneous: {
+                title: 'Miscellaneous',
+                items: [
+                    { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
+                    { name: "Spectators List", action: "spectators_list", type: "toggle", checked: false, icon: '<i class="fa-solid fa-eye"></i>', desc: "Detect nearby invisible players and players above/below" },
+                ]
+            },
                     wardrobe: {
                         title: 'Wardrobe',
                         items: [
@@ -403,6 +418,64 @@
                 updateSelection(currentIndex, currentMenuType);
                 updateScrollbarIndicator();
             }
+        }
+
+        // Spectators List Functions
+        function toggleSpectatorsList(enabled) {
+            const spectatorsContainer = document.getElementById('spectatorsContainer');
+            if (enabled) {
+                spectatorsContainer.style.display = 'block';
+                updateSpectatorsList();
+            } else {
+                spectatorsContainer.style.display = 'none';
+            }
+        }
+
+        function updateSpectatorsList() {
+            const spectatorsList = document.getElementById('spectatorsList');
+            if (!spectatorsList) return;
+
+            // This will be populated by Lua with actual spectator data
+            // For now, show a loading message
+            spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-name">Loading spectators...</div></div>';
+        }
+
+        function populateSpectatorsList(spectators) {
+            const spectatorsList = document.getElementById('spectatorsList');
+            if (!spectatorsList) return;
+
+            if (spectators.length === 0) {
+                spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-name">No spectators detected</div></div>';
+                return;
+            }
+
+            let html = '';
+            spectators.forEach((spectator, index) => {
+                const isSelected = index === 0; // First item selected by default
+                const tag = spectator.tag || '';
+                const type = spectator.type || '';
+                
+                html += `
+                    <div class="spectator-item ${isSelected ? 'selected' : ''}" data-index="${index}">
+                        ${tag ? `<span class="spectator-tag">${tag}</span>` : ''}
+                        <span class="spectator-name">${spectator.name}</span>
+                        ${type ? `<span class="spectator-type">${type}</span>` : ''}
+                    </div>
+                `;
+            });
+
+            spectatorsList.innerHTML = html;
+
+            // Add click handlers for spectator items
+            const spectatorItems = spectatorsList.querySelectorAll('.spectator-item');
+            spectatorItems.forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    // Remove previous selection
+                    spectatorItems.forEach(i => i.classList.remove('selected'));
+                    // Add selection to clicked item
+                    this.classList.add('selected');
+                });
+            });
         }
 
         function selectEffect(index, menuType) {
@@ -1039,6 +1112,12 @@
                             showNotification('Outfit Applied', `Successfully equipped: ${data.outfit}`, '<i class="fa-solid fa-check-circle"></i>');
                         }
                     }
+                } else if (data.type === 'spectatorsList') {
+                    if (data.spectators) {
+                        populateSpectatorsList(data.spectators);
+                    }
+                } else if (data.type === 'toggleSpectatorsList') {
+                    toggleSpectatorsList(data.enabled);
                 } else if (data.type === 'resourcesList') {
                     if (data.resources) {
                         populateResources(data.resources);
