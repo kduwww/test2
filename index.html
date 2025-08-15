@@ -528,38 +528,31 @@
         }
 
         function navigateBack() {
-            if (currentMenuType === 'self') {
+            if (currentMenuType === 'self' || currentMenuType === 'settings') {
+                const previousMenu = currentMenuType;
                 currentMenuType = 'main';
                 menuPath = ['HOME'];
                 updateBreadcrumb();
                 renderMenuItems(currentMenuType);
-                const selfIndex = menuData.main.items.findIndex(item => item.action === 'self');
-                updateSelection(selfIndex >= 0 ? selfIndex : 0, currentMenuType);
-                // Reset scroll position
+                
+                const returnIndex = menuData.main.items.findIndex(item => item.action === previousMenu);
+                updateSelection(returnIndex >= 0 ? returnIndex : 0, currentMenuType);
+
                 const menuItems = document.getElementById('menuItemsContainer');
                 if (menuItems) menuItems.scrollTop = 0;
                 updateScrollbarIndicator();
-            } else if (currentMenuType === 'settings') {
-                currentMenuType = 'main';
-                menuPath = ['HOME'];
-                updateBreadcrumb();
-                renderMenuItems(currentMenuType);
-                const settingsIndex = menuData.main.items.findIndex(item => item.action === 'settings');
-                updateSelection(settingsIndex >= 0 ? settingsIndex : 0, currentMenuType);
-                // Reset scroll position
-                const menuItems = document.getElementById('menuItemsContainer');
-                if (menuItems) menuItems.scrollTop = 0;
-                updateScrollbarIndicator();
+
             } else if (currentMenuType === 'style') {
                 currentMenuType = 'settings';
                 menuPath = ['HOME', 'SETTINGS'];
                 updateBreadcrumb();
                 renderMenuItems(currentMenuType);
                 updateSelection(0, currentMenuType);
-                // Reset scroll position
+                
                 const menuItems = document.getElementById('menuItemsContainer');
                 if (menuItems) menuItems.scrollTop = 0;
                 updateScrollbarIndicator();
+
             } else if (currentMenuType === 'main') {
                 // If already at main menu (HOME), reset everything and hide the menu
                 currentIndex = 0;
@@ -803,26 +796,11 @@
                         selectEffect(currentIndex, currentMenuType); 
                     }
                 } else if (data.type === 'showMenu') { 
-                    // Reset to home menu and first item when opening
-                    currentMenuType = 'main';
-                    menuPath = ['HOME'];
-                    currentIndex = 0;
-                    updateBreadcrumb();
-                    
                     menuContainer.style.display = 'flex';
                     menuContainer.style.opacity = '1';
                     menuContainer.style.transform = 'none'; 
-                    
                     renderMenuItems(currentMenuType);
-                    updateSelection(0, currentMenuType);
-                    
-                    // Reset scroll position
-                    const menuItems = document.getElementById('menuItemsContainer');
-                    if (menuItems) {
-                        menuItems.scrollTop = 0;
-                    }
-                    updateScrollbarIndicator();
-                    updateCustomScrollbar();
+                    updateSelection(currentIndex, currentMenuType);
                 } else if (data.type === 'hideMenu') { 
                     menuContainer.style.display = 'none';
                 } else if (data.type === 'back') { 
