@@ -74,23 +74,35 @@
                 ]
             },
             settings: {
-                title: 'SETTINGS',
-                items: [
-                    { name: "Style", icon: '<i class="fa-solid fa-palette"></i>', desc: "Menu Style Options", action: "style" },
-                ]
+                title: 'MAIN > MENU SETTINGS > BANNER SETTINGS',
+                isTabbed: true,
+                currentTab: 'main',
+                tabs: {
+                    main: {
+                        title: 'Main',
+                        items: [
+                            { name: "ATLAS-1", icon: '<i class="fa-solid fa-1"></i>', desc: "Style Option 1", action: "style_1" },
+                            { name: "ATLAS-2", icon: '<i class="fa-solid fa-2"></i>', desc: "Style Option 2", action: "style_2" },
+                            { name: "ATLAS-3", icon: '<i class="fa-solid fa-3"></i>', desc: "Style Option 3", action: "style_3" },
+                        ]
+                    },
+                    server: {
+                        title: 'Server',
+                        items: [
+                            { name: "Resource", icon: '<i class="fa-solid fa-cube"></i>', desc: "Resource Management", action: "resource" },
+                            { name: "Triggers", icon: '<i class="fa-solid fa-bolt"></i>', desc: "Server Triggers", action: "triggers" },
+                        ]
+                    },
+                    settings: {
+                        title: 'Settings',
+                        items: []
+                    }
+                }
             },
             misc: {
                 title: 'MISCELLANEOUS',
                 items: [
                     { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
-                ]
-            },
-            style: {
-                title: 'STYLE',
-                items: [
-                    { name: "ATLAS-1", icon: '<i class="fa-solid fa-1"></i>', desc: "Style Option 1", action: "style_1" },
-                    { name: "ATLAS-2", icon: '<i class="fa-solid fa-2"></i>', desc: "Style Option 2", action: "style_2" },
-                    { name: "ATLAS-3", icon: '<i class="fa-solid fa-3"></i>', desc: "Style Option 3", action: "style_3" },
                 ]
             }
         };
@@ -99,24 +111,76 @@
             const currentMenuData = menuData[menuType];
             let itemsHtml = '<div class="highlight-bar"></div>'; 
 
-            currentMenuData.items.forEach((item, index) => {
-                if (item.type === 'toggle') {
+            // Check if this is a tabbed menu (settings)
+            if (currentMenuData.isTabbed) {
+                // Render tab headers
+                itemsHtml += '<div class="tab-container">';
+                itemsHtml += '<div class="tab-headers">';
+                
+                Object.keys(currentMenuData.tabs).forEach((tabKey, tabIndex) => {
+                    const tab = currentMenuData.tabs[tabKey];
+                    const isActive = tabKey === currentMenuData.currentTab;
                     itemsHtml += `
-                        <div class="toggle-item" data-index="${index}" data-action="${item.action}">
-                            <div class="toggle-text">${item.name}</div>
-                            <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
+                        <div class="tab-header ${isActive ? 'active' : ''}" data-tab="${tabKey}">
+                            ${tab.title}
                         </div>
                     `;
+                });
+                
+                itemsHtml += '</div>';
+                itemsHtml += '</div>';
+                
+                // Render items for current tab
+                const currentTab = currentMenuData.tabs[currentMenuData.currentTab];
+                if (currentTab.items && currentTab.items.length > 0) {
+                    currentTab.items.forEach((item, index) => {
+                        if (item.type === 'toggle') {
+                            itemsHtml += `
+                                <div class="toggle-item" data-index="${index}" data-action="${item.action}">
+                                    <div class="toggle-text">${item.name}</div>
+                                    <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
+                                </div>
+                            `;
+                        } else {
+                            itemsHtml += `
+                                <div class="menu-item" data-index="${index}" data-action="${item.action}">
+                                    <div class="icon">${item.icon}</div>
+                                    <div class="text">${item.name}</div>
+                                    <div class="arrow">»</div>
+                                </div>
+                            `;
+                        }
+                    });
                 } else {
+                    // Show empty state for tabs with no items
                     itemsHtml += `
-                        <div class="menu-item" data-index="${index}" data-action="${item.action}">
-                            <div class="icon">${item.icon}</div>
-                            <div class="text">${item.name}</div>
-                            <div class="arrow">»</div>
+                        <div class="empty-tab">
+                            <div class="empty-text">This section will be added later</div>
                         </div>
                     `;
                 }
-            });
+            } else {
+                // Regular menu rendering
+                currentMenuData.items.forEach((item, index) => {
+                    if (item.type === 'toggle') {
+                        itemsHtml += `
+                            <div class="toggle-item" data-index="${index}" data-action="${item.action}">
+                                <div class="toggle-text">${item.name}</div>
+                                <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
+                            </div>
+                        `;
+                    } else {
+                        itemsHtml += `
+                            <div class="menu-item" data-index="${index}" data-action="${item.action}">
+                                <div class="icon">${item.icon}</div>
+                                <div class="text">${item.name}</div>
+                                <div class="arrow">»</div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
             menuItemsContainer.innerHTML = itemsHtml;
             
             highlightBar = document.querySelector('.highlight-bar');
@@ -133,7 +197,15 @@
                 itemElement.addEventListener('click', function() {
                     const index = parseInt(this.dataset.index);
                     const action = this.dataset.action;
-                    const itemData = menuData[currentMenuType].items[index];
+                    
+                    // Get item data based on menu structure
+                    let itemData;
+                    if (menuData[currentMenuType].isTabbed) {
+                        const currentTab = menuData[currentMenuType].tabs[menuData[currentMenuType].currentTab];
+                        itemData = currentTab.items[index];
+                    } else {
+                        itemData = menuData[currentMenuType].items[index];
+                    }
 
                     if (itemElement.classList.contains('toggle-item')) {
                         itemData.checked = !itemData.checked;
@@ -232,8 +304,26 @@
             counterElement.textContent = `${(totalItems > 0 && index >= 0) ? index + 1 : 0}/${totalItems}`;
         }
 
+        function switchTab(tabKey) {
+            if (currentMenuType === 'settings' && menuData.settings.tabs[tabKey]) {
+                menuData.settings.currentTab = tabKey;
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            }
+        }
+
         function selectEffect(index, menuType) {
-            const selectedOption = menuData[menuType].items[index];
+            let selectedOption;
+            
+            // Check if this is a tabbed menu
+            if (menuData[menuType].isTabbed) {
+                const currentTab = menuData[menuType].tabs[menuData[menuType].currentTab];
+                selectedOption = currentTab.items[index];
+            } else {
+                selectedOption = menuData[menuType].items[index];
+            }
+            
             if (!selectedOption) return;
 
             if (menuType === 'main' && selectedOption.action === 'self') {
@@ -252,14 +342,7 @@
                 updateScrollbarIndicator();
             } else if (menuType === 'main' && selectedOption.action === 'settings') {
                 currentMenuType = 'settings';
-                menuPath = ['HOME', 'SETTINGS'];
-                updateBreadcrumb();
-                renderMenuItems(currentMenuType);
-                updateSelection(0, currentMenuType);
-                updateScrollbarIndicator();
-            } else if (menuType === 'settings' && selectedOption.action === 'style') {
-                currentMenuType = 'style';
-                menuPath = ['HOME', 'SETTINGS', 'STYLE'];
+                menuPath = ['HOME', 'MENU SETTINGS', 'BANNER SETTINGS'];
                 updateBreadcrumb();
                 renderMenuItems(currentMenuType);
                 updateSelection(0, currentMenuType);
@@ -555,17 +638,6 @@
                 if (menuItems) menuItems.scrollTop = 0;
                 updateScrollbarIndicator();
 
-            } else if (currentMenuType === 'style') {
-                currentMenuType = 'settings';
-                menuPath = ['HOME', 'SETTINGS'];
-                updateBreadcrumb();
-                renderMenuItems(currentMenuType);
-                updateSelection(0, currentMenuType);
-                
-                const menuItems = document.getElementById('menuItemsContainer');
-                if (menuItems) menuItems.scrollTop = 0;
-                updateScrollbarIndicator();
-
             } else if (currentMenuType === 'main') {
                 // If already at main menu (HOME), hide the menu and external scrollbar; preserve state
                 menuContainer.style.display = 'none';
@@ -826,6 +898,10 @@
                         showNotification('Teleport', 'Successfully teleported to waypoint!', '<i class="fa-solid fa-location-arrow"></i>');
                     } else {
                         showNotification('Teleport Failed', 'No waypoint set on map!', '<i class="fa-solid fa-exclamation-triangle"></i>');
+                    }
+                } else if (data.type === 'switchTab') {
+                    if (currentMenuType === 'settings' && data.tab) {
+                        switchTab(data.tab);
                     }
                 } else if (data.type === 'setHeaderImage') {
                     setHeaderImage(data.imageUrl); 
