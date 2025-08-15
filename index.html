@@ -990,13 +990,17 @@
                                        `Resource "${data.resource}" has been ${actionText}.`, 
                                        data.action === 'start' ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-stop"></i>');
                         
-                        // Update resource status locally
+                        // Update resource status locally for immediate UI feedback
                         if (currentMenuType === 'resources') {
                             const resourceItem = menuData.resources.items.find(item => item.name === data.resource);
                             if (resourceItem) {
+                                // Update the status immediately
                                 resourceItem.running = data.action === 'start';
+                                
+                                // Re-render the menu with updated status
                                 renderMenuItems(currentMenuType);
                                 updateSelection(currentIndex, currentMenuType);
+                                updateScrollbarIndicator();
                             }
                         }
                     } else {
