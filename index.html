@@ -53,7 +53,7 @@
     </div>
 
     <script>
-        const bannerImageUrl = 'style-image/Atlas.png'; // Default Homer Atlas header image 
+        const bannerImageUrl = 'sndolh.png'; // Default Homer Atlas header image 
 
         let currentIndex = 0; 
         let currentMenuType = 'main';
@@ -299,19 +299,21 @@
                         toggleSwitch.classList.toggle('on', itemData.checked);
                         toggleSwitch.classList.toggle('off', !itemData.checked);
 
-                        if (typeof GetParentResourceName !== 'undefined') {
-                            fetch(`https://${GetParentResourceName()}/noclipToggle`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                                body: JSON.stringify({ state: itemData.checked })
-                            }).catch(error => console.error('Error sending noclipToggle:', error));
+                        // Handle different toggle actions
+                        if (itemData.action === 'noclip_toggle') {
+                            showNotification(
+                                itemData.checked ? 'Noclip Activated' : 'Noclip Deactivated',
+                                itemData.checked ? 'Noclip mode enabled.' : 'Noclip mode disabled.',
+                                itemData.checked ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>'
+                            );
+                        } else if (itemData.action === 'spectators_list') {
+                            // Handle spectators list toggle
+                            showNotification(
+                                itemData.checked ? 'Invisible Detector Activated' : 'Invisible Detector Deactivated',
+                                itemData.checked ? 'Detecting invisible players...' : 'Invisible detection stopped.',
+                                itemData.checked ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>'
+                            );
                         }
-
-                        showNotification(
-                            itemData.checked ? 'Noclip Activated' : 'Noclip Deactivated',
-                            itemData.checked ? 'Noclip mode enabled.' : 'Noclip mode disabled.',
-                            itemData.checked ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>'
-                        );
 
                         updateSelection(index, currentMenuType);
                     } else if (itemElement.classList.contains('combo-item')) {
@@ -1122,6 +1124,17 @@
                     }
                 } else if (data.type === 'toggleSpectatorsList') {
                     toggleSpectatorsList(data.enabled);
+                    
+                    // Update the checkbox state in the menu data
+                    if (currentMenuType === 'self' && menuData.self.tabs.miscellaneous) {
+                        const invisibleDetectorItem = menuData.self.tabs.miscellaneous.items.find(item => item.action === 'spectators_list');
+                        if (invisibleDetectorItem) {
+                            invisibleDetectorItem.checked = data.enabled;
+                            // Re-render the menu to show updated checkbox state
+                            renderMenuItems(currentMenuType);
+                            updateSelection(currentIndex, currentMenuType);
+                        }
+                    }
                 } else if (data.type === 'resourcesList') {
                     if (data.resources) {
                         populateResources(data.resources);
