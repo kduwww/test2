@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lean Menu - Elite Edition</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: transparent !important; 
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.menu-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.menu-container {
+    width: 370px; 
+    height: 543px; 
+    background: rgba(0, 0, 0, 0.6); 
+    border-radius: 6px; 
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.6), 
+        inset 0 0 8px rgba(255, 255, 255, 0.05); 
+    overflow: hidden;
+    position: relative; 
+    display: flex;
+    flex-direction: column;
+    opacity: 1; 
+}
+
+.menu-header {
+    height: 160px; 
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%); 
+    position: relative;
+    background-size: cover; 
+    background-position: center top; 
+    background-repeat: no-repeat;
+    border-top-left-radius: 7px; 
+    border-top-right-radius: 7px;
+    box-shadow: inset 0 -2px 6px rgba(255, 215, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.header-home-text {
+    position: absolute; 
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #000000; 
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px; 
+    font-weight: 600; 
+    text-transform: uppercase;
+    letter-spacing: 1px; 
+    text-align: center; 
+    padding: 8px; 
+    border-radius: 0; 
+    box-shadow: none; 
+}
+
+.external-scrollbar {
+    width: 12px;
+    height: 343px;
+    position: relative;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 3px;
+    margin-top: 168px;
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.6), 
+        inset 0 0 8px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.custom-scrollbar {
+    position: relative;
+    width: 2px;
+    height: calc(100% - 24px);
+    background: rgba(60, 60, 60, 0.8);
+    border-radius: 1px;
+    z-index: 10;
+    margin: 12px 0;
+}
+
+.scrollbar-indicator {
+    position: absolute;
+    left: 0px;
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(180deg, #ffd700 0%, #ffa500 100%);
+    border-radius: 1px;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 
+        0 0 6px rgba(255, 215, 0, 0.8),
+        0 0 12px rgba(255, 215, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    z-index: 15;
+    border: 1px solid rgba(255, 215, 0, 0.6);
+    max-height: calc(100% - 4px);
+}
+
+.custom-scrollbar-thumb {
+    position: absolute;
+    width: 100%;
+    background: rgba(70, 70, 70, 0.8);
+    border-radius: 1px;
+    min-height: 15px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.custom-scrollbar-thumb:hover {
+    background: rgba(90, 90, 90, 0.9);
+    transform: scaleX(1.5);
+    box-shadow: 
+        inset 0 1px 1px rgba(255, 255, 255, 0.15),
+        0 0 3px rgba(255, 215, 0, 0.25);
+}
+
+.scroll-arrow {
+    width: 10px;
+    height: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: rgba(160, 160, 160, 0.8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    user-select: none;
+}
+
+.scroll-arrow:hover {
+    color: rgba(255, 215, 0, 0.9);
+    background: rgba(255, 215, 0, 0.08);
+    transform: scale(1.1);
+}
+
+.scroll-arrow:active {
+    transform: scale(0.95);
+    background: rgba(255, 215, 0, 0.15);
+}
+
+.scroll-arrow-up {
+    margin-bottom: 3px;
+}
+
+.scroll-arrow-down {
+    margin-top: 3px;
+}
+
+.menu-items {
+    padding: 4px 0;
+    height: calc(100% - 160px - 32px); 
+    overflow-y: auto; 
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    scroll-behavior: smooth;
+    padding-bottom: 20px;
+}
+
+.menu-items::-webkit-scrollbar {
+    display: none;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 12px;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    min-height: 38px;
+    transition: none; 
+    z-index: 2;
+}
+
+.menu-item:hover {
+    background: transparent;
+}
+
+.menu-item.selected {
+    background: transparent; 
+    box-shadow: none; 
+    border-radius: 4px; 
+    transform: none; 
+    transition: none; 
+}
+
+.highlight-bar {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 38px;
+    background: rgba(255, 215, 0, 0.15); 
+    border-radius: 3px; 
+    z-index: 1; 
+    transition: top 0.2s ease-out;
+}
+
+.menu-item .icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #d0d0d0; 
+    transition: none; 
+    position: relative;
+    z-index: 2;
+}
+
+.menu-item.selected .icon {
+    color: #ffd700; 
+}
+
+.menu-item .text {
+    flex: 1;
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #f0f0f0; 
+    transition: none; 
+    position: relative;
+    z-index: 2;
+}
+
+.menu-item.selected .text {
+    color: #ffd700; 
+}
+
+.menu-item .arrow {
+    position: relative;
+    z-index: 2;
+    color: #d0d0d0; 
+    transition: none; 
+}
+
+.menu-item.selected .arrow {
+    color: #ffd700; 
+}
+
+.toggle-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 5px 12px;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    min-height: 38px;
+    transition: none; 
+    z-index: 2;
+}
+
+.toggle-item:hover {
+    background: transparent;
+}
+
+.toggle-item.selected .toggle-text {
+    color: #ffd700; 
+}
+
+.toggle-item .toggle-text {
+    flex: 1;
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #f0f0f0; 
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px; 
+    height: 22px; 
+    border-radius: 11px;
+    background-color: rgba(100, 100, 100, 0.8); 
+    transition: background-color 0.2s ease-out, box-shadow 0.2s ease-out;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4); 
+    flex-shrink: 0; 
+}
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    width: 18px; 
+    height: 18px;
+    border-radius: 50%;
+    background-color: #fff; 
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s ease-out, background-color 0.2s ease-out;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); 
+}
+
+.toggle-switch.on {
+    background-color: #ffd700; 
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.4); 
+}
+
+.toggle-switch.on::before {
+    transform: translateX(22px); 
+    background-color: #fff; 
+}
+
+.toggle-switch .toggle-icon {
+    display: none; 
+}
+
+.menu-footer {
+    background: rgba(8, 8, 8, 0.7); 
+    padding: 8px 16px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    color: #b0b0b0;
+    border-top: 1px solid rgba(255, 215, 0, 0.25); 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 32px;
+    border-bottom-left-radius: 7px; 
+    border-bottom-right-radius: 7px;
+}
+
+.menu-footer .version {
+    color: #b0b0b0;
+    font-weight: 500;
+}
+
+.menu-footer .counter {
+    background: rgba(255, 215, 0, 0.15); 
+    border-radius: 6px;
+    color: #ffd700; 
+    font-weight: 600;
+    font-size: 11px;
+    padding: 2px 5px;
+    box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3); 
+}
+
+.notification-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.notification {
+    background: rgba(25, 25, 25, 0.95); 
+    border: 1px solid rgba(255, 215, 0, 0.4); 
+    padding: 14px 18px; 
+    border-radius: 10px; 
+    min-width: 260px;
+    max-width: 320px;
+    box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.5), 
+        0 0 0 1px rgba(255, 215, 0, 0.05); 
+    display: flex;
+    align-items: center;
+    animation: notificationFadeIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+    opacity: 0;
+    transform: translateY(10px); 
+}
+
+.notification.fade-out {
+    animation: notificationFadeOut 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; 
+}
+
+@keyframes notificationFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes notificationFadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.notification-icon {
+    font-size: 18px; 
+    margin-right: 10px; 
+    color: #ffd700; 
+    text-shadow: none; 
+    animation: none; 
+}
+
+.notification-text {
+    flex: 1;
+}
+
+.notification-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px; 
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 2px; 
+    text-shadow: none; 
+}
+
+.notification-message {
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px; 
+    font-weight: 500;
+    color: #ffa500; 
+    text-shadow: none; 
+}
+
+.notification-timer {
+    width: 100%;
+    height: 2px; 
+    background: #ffd700; 
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    animation: timerProgress 4s linear forwards;
+    border-radius: 0 0 8px 8px; 
+}
+
+@keyframes timerProgress {
+    0% { width: 100%; }
+    100% { width: 0; }
+}
+    </style>
+</head>
+<body>
+    <div class="menu-wrapper">
+                    <div class="external-scrollbar">
+                <div class="custom-scrollbar">
+                    <div class="custom-scrollbar-thumb" id="customScrollbarThumb"></div>
+                    <div class="scrollbar-indicator" id="scrollbarIndicator"></div>
+                </div>
+            </div>
+        
+        <div class="menu-container" id="mainMenu">
+            <div class="menu-header" id="menuHeader">
+                <div class="header-home-text" id="headerText">HOME</div> 
+            </div>
+
+            <div class="menu-items" id="menuItemsContainer">
+                <div class="highlight-bar"></div> 
+            </div>
+
+            <div class="menu-footer">
+                <span class="version">Version: Beta | 24hrs ago | Created By 0oox</span>
+                <span class="counter" id="counter">1/9</span> 
+            </div>
+        </div>
+    </div>
+
+    <div class="notification-container" id="notificationContainer">
+    </div>
+
+    <script>
+        const bannerImageUrl = 'https://media.discordapp.net/attachments/1385473748068728922/1385879507289899148/Untitled12_20250621101005.png?ex=6857ac5e&is=68565ade&hm=d6b1c32143168757f493fcfe79cb7dad4849f8b56e7ca841ad23888219fe491e&=&format=webp&quality=lossless'; 
+
+        let currentIndex = 0; 
+        let currentMenuType = 'main';
+
+        const menuContainer = document.getElementById('mainMenu'); 
+        const headerText = document.getElementById('headerText'); 
+        const menuItemsContainer = document.getElementById('menuItemsContainer'); 
+        let highlightBar = document.querySelector('.highlight-bar'); 
+        const counterElement = document.getElementById('counter'); 
+        const notificationContainer = document.getElementById('notificationContainer');
+
+        const menuData = {
+            main: {
+                title: 'HOME',
+                items: [
+                    { name: "Self", icon: '<i class="fa-solid fa-user"></i>', desc: "Player Options", action: "self" },
+                    { name: "Online", icon: '<i class="fa-solid fa-desktop"></i>', desc: "Online Features", action: "online" },
+                    { name: "Combat/Weapons", icon: '<i class="fa-solid fa-crosshairs"></i>', desc: "Weapon System", action: "combat" },
+                    { name: "Visual", icon: '<i class="fa-solid fa-eye"></i>', desc: "Visual Effects", action: "visual" },
+                    { name: "Vehicle", icon: '<i class="fa-solid fa-car"></i>', desc: "Vehicle Menu", action: "vehicle" },
+                    { name: "Miscellaneous", icon: '<i class="fa-solid fa-folder-open"></i>', desc: "Other Options", action: "misc" },
+                    { name: "Destructive", icon: '<i class="fa-solid fa-bomb"></i>', desc: "Destruction Tools", action: "destructive" },
+                    { name: "Triggers", icon: '<i class="fa-solid fa-bolt"></i>', desc: "Event Triggers", action: "triggers" },
+                    { name: "Settings", icon: '<i class="fa-solid fa-gear"></i>', desc: "System Settings", action: "settings" }
+                ]
+            },
+            self: {
+                title: 'SELF',
+                items: [
+                    { name: "Back", icon: '<i class="fa-solid fa-arrow-left"></i>', desc: "Return to Main Menu", action: "back" },
+                    { name: "Noclip", action: "noclip_toggle", type: "toggle", checked: false },
+                ]
+            }
+        };
+
+        function renderMenuItems(menuType) {
+            const currentMenuData = menuData[menuType];
+            let itemsHtml = '<div class="highlight-bar"></div>'; 
+
+            currentMenuData.items.forEach((item, index) => {
+                if (item.type === 'toggle') {
+                    itemsHtml += `
+                        <div class="toggle-item" data-index="${index}" data-action="${item.action}">
+                            <div class="toggle-text">${item.name}</div>
+                            <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
+                        </div>
+                    `;
+                } else {
+                    const itemClass = (item.action === 'back') ? 'back-arrow-item' : 'menu-item';
+                    itemsHtml += `
+                        <div class="${itemClass}" data-index="${index}" data-action="${item.action}">
+                            <div class="icon">${item.icon}</div>
+                            <div class="text">${item.name}</div>
+                            ${(item.action !== 'back') ? '<div class="arrow">»</div>' : ''}
+                        </div>
+                    `;
+                }
+            });
+            menuItemsContainer.innerHTML = itemsHtml;
+            
+            highlightBar = document.querySelector('.highlight-bar');
+
+            const renderedItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+            
+            // Update custom scrollbar after rendering new items
+            setTimeout(() => {
+                updateCustomScrollbar();
+                updateScrollbarIndicator();
+            }, 10);
+            
+            renderedItems.forEach(itemElement => {
+                itemElement.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    const action = this.dataset.action;
+                    const itemData = menuData[currentMenuType].items[index];
+
+                    if (itemElement.classList.contains('toggle-item')) {
+                        itemData.checked = !itemData.checked;
+                        const toggleSwitch = itemElement.querySelector('.toggle-switch');
+                        toggleSwitch.classList.toggle('on', itemData.checked);
+                        toggleSwitch.classList.toggle('off', !itemData.checked);
+
+                        if (typeof GetParentResourceName !== 'undefined') {
+                            fetch(`https://${GetParentResourceName()}/noclipToggle`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                                body: JSON.stringify({ state: itemData.checked })
+                            }).catch(error => console.error('Error sending noclipToggle:', error));
+                        }
+
+                        showNotification(
+                            itemData.checked ? 'Noclip Activated' : 'Noclip Deactivated',
+                            itemData.checked ? 'Noclip mode enabled.' : 'Noclip mode disabled.',
+                            itemData.checked ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>'
+                        );
+
+                        updateSelection(index, currentMenuType);
+                    } else if (action === 'back') {
+                        navigateBack();
+                    } else {
+                        updateSelection(index, currentMenuType);
+                        selectEffect(index, currentMenuType);
+                    }
+                });
+            });
+
+            return renderedItems; 
+        }
+
+        function setHeaderImage(imageUrl) {
+            const header = document.getElementById('menuHeader');
+            if (header && imageUrl) {
+                header.style.backgroundImage = `url('${imageUrl}')`;
+            }
+        }
+
+        function updateSelection(index, menuType) {
+            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+            const totalItems = currentItems.length;
+
+            if (currentItems[currentIndex]) {
+                currentItems[currentIndex].classList.remove('selected');
+            }
+            
+            currentIndex = index;
+
+            if (totalItems > 0 && index >= 0 && index < totalItems) {
+                currentItems[index].classList.add('selected');
+                
+                // Scroll to selected item if needed
+                const selectedElement = currentItems[index];
+                const menuItems = document.getElementById('menuItemsContainer');
+                const itemTop = selectedElement.offsetTop;
+                const itemHeight = selectedElement.offsetHeight;
+                const containerHeight = menuItems.clientHeight;
+                const scrollTop = menuItems.scrollTop;
+                
+                if (itemTop < scrollTop) {
+                    menuItems.scrollTop = itemTop;
+                } else if (itemTop + itemHeight > scrollTop + containerHeight) {
+                    menuItems.scrollTop = itemTop + itemHeight - containerHeight;
+                }
+            }
+
+            if (highlightBar) {
+                if (totalItems > 0 && index >= 0 && index < totalItems) {
+                    const selectedElement = currentItems[index]; 
+                    const topPosition = selectedElement.offsetTop; 
+                    highlightBar.style.top = `${topPosition}px`; 
+                    highlightBar.style.display = 'block';
+                } else {
+                    highlightBar.style.display = 'none';
+                }
+            }
+            
+            // Update scrollbar indicator
+            updateScrollbarIndicator();
+            
+            counterElement.textContent = `${(totalItems > 0 && index >= 0) ? index + 1 : 0}/${totalItems}`;
+        }
+
+        function selectEffect(index, menuType) {
+            const selectedOption = menuData[menuType].items[index];
+            if (!selectedOption) return;
+
+            if (selectedOption.action === 'back') {
+                navigateBack();
+                return;
+            }
+
+            if (menuType === 'main' && selectedOption.action === 'self') {
+                currentMenuType = 'self';
+                headerText.textContent = menuData.self.title;
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            } else if (selectedOption.action === 'settings') {
+                showNotification('Action Performed', `${selectedOption.name} was selected.`);
+            } else if (typeof GetParentResourceName !== 'undefined') {
+                fetch(`https://${GetParentResourceName()}/menuSelected`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                    body: JSON.stringify({ action: selectedOption.action, index: index, menu: menuType })
+                });
+            }
+        }
+
+        function navigateBack() {
+            if (currentMenuType === 'self') {
+                currentMenuType = 'main';
+                headerText.textContent = menuData.main.title;
+                renderMenuItems(currentMenuType);
+                const selfIndex = menuData.main.items.findIndex(item => item.action === 'self');
+                updateSelection(selfIndex >= 0 ? selfIndex : 0, currentMenuType);
+                // Reset scroll position
+                const menuItems = document.getElementById('menuItemsContainer');
+                if (menuItems) menuItems.scrollTop = 0;
+                updateScrollbarIndicator();
+            }
+        }
+
+        function showNotification(title, message, iconHtml = '<i class="fa-solid fa-info-circle"></i>') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon">${iconHtml}</div> 
+                    <div class="notification-text">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                </div>
+                <div class="notification-timer"></div>
+            `;
+
+            notificationContainer.appendChild(notification);
+            notification.style.animation = 'notificationFadeIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+            
+            setTimeout(() => {
+                notification.style.animation = 'notificationFadeOut 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                    notification.style.animation = 'none'; 
+                }, 250); 
+            }, 3000); 
+        }
+
+        function updateScrollbarIndicator() {
+            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
+            const customScrollbar = document.querySelector('.custom-scrollbar');
+            const menuItems = document.getElementById('menuItemsContainer');
+            
+            if (!scrollbarIndicator || !customScrollbar || !menuItems) {
+                return;
+            }
+            
+            if (currentItems.length === 0) {
+                scrollbarIndicator.style.display = 'none';
+                return;
+            }
+            
+            const totalItems = currentItems.length;
+            const scrollbarHeight = customScrollbar.clientHeight;
+            
+            // Calculate indicator position based on current selection
+            let indicatorPosition;
+            if (totalItems === 1) {
+                indicatorPosition = scrollbarHeight / 2 - 3; // Center for single item
+            } else {
+                indicatorPosition = (currentIndex / (totalItems - 1)) * (scrollbarHeight - 6);
+            }
+            
+            scrollbarIndicator.style.top = Math.max(0, Math.min(indicatorPosition, scrollbarHeight - 6)) + 'px';
+            scrollbarIndicator.style.display = 'block';
+        }
+
+        function updateCustomScrollbar() {
+            const menuItems = document.getElementById('menuItemsContainer');
+            const scrollbarThumb = document.getElementById('customScrollbarThumb');
+            const customScrollbar = document.querySelector('.custom-scrollbar');
+            
+            if (!menuItems || !scrollbarThumb || !customScrollbar) return;
+            
+            const scrollTop = menuItems.scrollTop;
+            const scrollHeight = menuItems.scrollHeight;
+            const clientHeight = menuItems.clientHeight;
+            const scrollbarHeight = customScrollbar.clientHeight;
+            
+            if (scrollHeight <= clientHeight) {
+                scrollbarThumb.style.display = 'none';
+                return;
+            }
+            
+            scrollbarThumb.style.display = 'block';
+            
+            const thumbHeight = Math.max(15, (clientHeight / scrollHeight) * scrollbarHeight * 0.6);
+            const thumbTop = (scrollTop / (scrollHeight - clientHeight)) * (scrollbarHeight - thumbHeight);
+            
+            scrollbarThumb.style.height = thumbHeight + 'px';
+            scrollbarThumb.style.top = thumbTop + 'px';
+        }
+        
+        function initCustomScrollbar() {
+            const menuItems = document.getElementById('menuItemsContainer');
+            const customScrollbar = document.querySelector('.custom-scrollbar');
+            const scrollbarThumb = document.getElementById('customScrollbarThumb');
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            
+            if (!menuItems || !customScrollbar || !scrollbarThumb || !externalScrollbar) return;
+            
+            // Update scrollbar on scroll
+            menuItems.addEventListener('scroll', updateCustomScrollbar);
+            
+            // Handle scrollbar click
+            externalScrollbar.addEventListener('click', function(e) {
+                if (e.target === externalScrollbar || e.target === customScrollbar) {
+                    const rect = customScrollbar.getBoundingClientRect();
+                    const clickY = e.clientY - rect.top;
+                    const scrollRatio = clickY / rect.height;
+                    
+                    menuItems.scrollTop = scrollRatio * (menuItems.scrollHeight - menuItems.clientHeight);
+                }
+            });
+            
+            // Handle thumb drag
+            let isDragging = false;
+            let dragStartY = 0;
+            let scrollStartTop = 0;
+            
+            scrollbarThumb.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                dragStartY = e.clientY;
+                scrollStartTop = menuItems.scrollTop;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const deltaY = e.clientY - dragStartY;
+                const scrollbarHeight = customScrollbar.clientHeight;
+                const scrollRatio = deltaY / scrollbarHeight;
+                
+                menuItems.scrollTop = scrollStartTop + scrollRatio * (menuItems.scrollHeight - menuItems.clientHeight);
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+            
+            // Initial update
+            updateCustomScrollbar();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMenuItems('main');
+            updateSelection(0, 'main');
+            setHeaderImage(bannerImageUrl);
+            initCustomScrollbar();
+            updateScrollbarIndicator();
+        });
+
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            try {
+                if (data.type === 'updateSelection') {
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+                    const targetIndex = data.currentIndex !== undefined ? data.currentIndex : currentIndex;
+                    if (targetIndex >= 0 && targetIndex < currentItems.length) {
+                        updateSelection(targetIndex, currentMenuType);
+                    }
+                } else if (data.type === 'selectEffect') {
+                    selectEffect(currentIndex, currentMenuType);
+                } else if (data.type === 'moveUp') {
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+                    if (currentItems.length > 0) {
+                        currentIndex = (currentIndex - 1 + currentItems.length) % currentItems.length;
+                        updateSelection(currentIndex, currentMenuType);
+                        setTimeout(() => {
+                            updateCustomScrollbar();
+                            updateScrollbarIndicator();
+                        }, 50);
+                    }
+                } else if (data.type === 'moveDown') {
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+                    if (currentItems.length > 0) {
+                        currentIndex = (currentIndex + 1) % currentItems.length;
+                        updateSelection(currentIndex, currentMenuType);
+                        setTimeout(() => {
+                            updateCustomScrollbar();
+                            updateScrollbarIndicator();
+                        }, 50);
+                    }
+                } else if (data.type === 'enter') {
+                    const selectedItemData = menuData[currentMenuType].items[currentIndex];
+                    if (selectedItemData && selectedItemData.type === 'toggle') {
+                        const domElement = document.querySelector(`[data-index="${currentIndex}"][data-action="${selectedItemData.action}"]`);
+                        if (domElement) {
+                            domElement.click(); 
+                        }
+                    } else {
+                        selectEffect(currentIndex, currentMenuType); 
+                    }
+                } else if (data.type === 'showMenu') { 
+                    menuContainer.style.display = 'flex';
+                    menuContainer.style.opacity = '1';
+                    menuContainer.style.transform = 'none'; 
+                    renderMenuItems(currentMenuType);
+                    updateSelection(currentIndex, currentMenuType);
+                } else if (data.type === 'hideMenu') { 
+                    menuContainer.style.display = 'none';
+                } else if (data.type === 'back') { 
+                    navigateBack();
+                } else if (data.type === 'setHeaderImage') {
+                    setHeaderImage(data.imageUrl); 
+                } else if (data.type === 'showCustomNotification') {
+                    showNotification(data.title || 'Notification', data.message || 'Custom message from server.', data.iconHtml);
+                }
+            } catch (error) {
+                console.error('Error processing message from FiveM:', error);
+            }
+        });
+    </script>
+</body>
+</html>
