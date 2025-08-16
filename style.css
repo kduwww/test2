@@ -656,6 +656,226 @@ html, body {
     color: #ffffff;
 }
 
+/* Key input item styles */
+.key-input-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 12px;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    min-height: 38px;
+    transition: none;
+    z-index: 2;
+}
+
+.key-input-item:hover {
+    background: transparent;
+}
+
+.key-input-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.key-input-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #d0d0d0;
+    transition: none;
+}
+
+.key-input-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #f0f0f0;
+    transition: none;
+}
+
+.key-input-selector {
+    display: flex;
+    align-items: center;
+}
+
+.key-input-hint {
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 4px 8px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.current-key {
+    color: #ffffff;
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+.key-input-item.selected .key-input-icon {
+    color: #ffd700;
+}
+
+.key-input-item.selected .key-input-text {
+    color: #ffd700;
+}
+
+.key-input-item.selected .key-input-hint {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.6);
+    color: #ffffff;
+}
+
+/* Key Selection Dialog Styles */
+.key-selection-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.key-dialog-content {
+    background: rgba(25, 25, 25, 0.95);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90vw;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.key-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%);
+    color: #000000;
+}
+
+.key-dialog-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.key-dialog-close {
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000000;
+    transition: color 0.2s ease;
+}
+
+.key-dialog-close:hover {
+    color: #ffffff;
+}
+
+.key-dialog-body {
+    padding: 24px 20px;
+}
+
+.key-instruction {
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    color: #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.key-display {
+    text-align: center;
+    margin-bottom: 24px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.key-placeholder {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    color: #888888;
+    font-style: italic;
+}
+
+.selected-key {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.key-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.key-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.key-btn-cancel {
+    background: rgba(100, 100, 100, 0.8);
+    color: #e0e0e0;
+}
+
+.key-btn-cancel:hover {
+    background: rgba(120, 120, 120, 0.9);
+    color: #ffffff;
+}
+
+.key-btn-confirm {
+    background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+    color: #000000;
+}
+
+.key-btn-confirm:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ffed4e 0%, #ffb84d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.key-btn-confirm:disabled {
+    background: rgba(100, 100, 100, 0.5);
+    color: #888888;
+    cursor: not-allowed;
+}
+
 /* Spectators List Styles - Keybinds Style */
 .spectators-container {
     position: fixed;
