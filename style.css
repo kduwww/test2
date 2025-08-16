@@ -795,6 +795,7 @@ html, body {
     z-index: 2000;
     font-family: 'Roboto', sans-serif;
     backdrop-filter: blur(10px);
+    pointer-events: auto;
 }
 
 .keybind-input-header {

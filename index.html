@@ -917,6 +917,45 @@
             
             keybindInputContainer.style.display = 'none';
             keybindDisplay.blur();
+            
+            // IMPORTANT: Ensure menu is visible and functional
+            if (menuContainer.style.display === 'none') {
+                menuContainer.style.display = 'flex';
+                const externalScrollbar = document.querySelector('.external-scrollbar');
+                if (externalScrollbar) {
+                    externalScrollbar.style.display = 'flex';
+                }
+            }
+            
+            // Force menu to be interactive again
+            menuContainer.style.pointerEvents = 'auto';
+            menuContainer.style.zIndex = '1000';
+            
+            // Ensure all menu elements are interactive
+            const menuItems = document.querySelectorAll('.menu-item, .toggle-item, .combo-item');
+            menuItems.forEach(item => {
+                item.style.pointerEvents = 'auto';
+            });
+            
+            // Re-enable menu functionality
+            document.body.style.pointerEvents = 'auto';
+            
+            console.log('Keybind input hidden, menu restored and interactive');
+            
+            // Test menu functionality
+            setTimeout(() => {
+                console.log('Testing menu functionality...');
+                console.log('Menu container display:', menuContainer.style.display);
+                console.log('Menu container pointer-events:', menuContainer.style.pointerEvents);
+                console.log('Menu container z-index:', menuContainer.style.zIndex);
+                
+                // Force a menu refresh to ensure it's working
+                if (currentMenuType) {
+                    renderMenuItems(currentMenuType);
+                    updateSelection(currentIndex, currentMenuType);
+                    console.log('Menu refreshed successfully');
+                }
+            }, 100);
         }
         
         function setKeybind(keyCode, keyName, isModifier = false) {
@@ -1042,6 +1081,18 @@
             }
         });
         
+        // Ensure menu navigation still works when keybind input is hidden
+        document.addEventListener('keydown', function(e) {
+            // Only handle navigation keys when keybind input is hidden
+            if (keybindInputContainer.style.display === 'none') {
+                // Allow menu navigation keys to pass through
+                if ([37, 38, 39, 40, 13, 8, 69, 81].includes(e.keyCode)) {
+                    // These are menu navigation keys - don't prevent default
+                    return;
+                }
+            }
+        });
+        
         // Keyboard state tracking
         window.keyboardState = {
             shift: false,
@@ -1096,17 +1147,19 @@
                 const keybindName = window.selectedKeybind && window.selectedKeybind.fullName ? window.selectedKeybind.fullName : 'Unknown Key';
                 showNotification('Keybind Set', `Menu will now open with: ${keybindName}`, '<i class="fa-solid fa-keyboard"></i>');
                     
-                    // Send message to Lua to update the keybind
+                    // Send message to Lua to update the keybind using Macho DUI
                     if (typeof GetParentResourceName !== 'undefined') {
-                        // We'll use a custom approach - store in a global variable that Lua can check
+                        // Store in global variables that Lua can check
                         window.menuKeybindCode = window.selectedKeybind.code;
                         window.menuKeybindName = window.selectedKeybind.fullName || 'Unknown Key';
                         
-                        // Also send via postMessage for immediate response
+                        // Use postMessage for Macho DUI communication
                         window.postMessage({
                             type: 'keybindSelected',
                             keybind: window.selectedKeybind
                         }, '*');
+                        
+                        console.log('Keybind selection sent via postMessage:', window.selectedKeybind);
                     }
                 } else {
                     // Show error if no keybind is selected
@@ -1459,6 +1512,14 @@
                     showKeybindInput();
                 } else if (data.type === 'hideKeybindInput') {
                     hideKeybindInput();
+                    // IMPORTANT: Restore menu functionality after keybind input
+                    if (menuContainer.style.display === 'none') {
+                        menuContainer.style.display = 'flex';
+                        const externalScrollbar = document.querySelector('.external-scrollbar');
+                        if (externalScrollbar) {
+                            externalScrollbar.style.display = 'flex';
+                        }
+                    }
                 } else if (data.type === 'keybindSelected') {
                     // Handle keybind selection from the keybind input
                     if (data.keybind) {
@@ -1466,6 +1527,10 @@
                         // Store the keybind for Lua to access
                         window.menuKeybindCode = data.keybind.code;
                         window.menuKeybindName = data.keybind.name;
+                        
+                        // Keybind selection confirmed - no need to send back to Lua
+                        // Lua will read the global variables directly
+                        console.log('Keybind selection confirmed:', data.keybind);
                     }
                 }
             } catch (error) {
