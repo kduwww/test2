@@ -53,7 +53,7 @@
     </div>
 
     <!-- Keybind Input UI -->
-    <div class="keybind-input-container" id="keybindInputContainer" style="display: none;">
+    <div class="keybind-input-container" id="keybindInputContainer" style="display: block;">
         <div class="keybind-input-header">
             <div class="keybind-input-icon">
                 <i class="fa-solid fa-keyboard"></i>
@@ -70,6 +70,7 @@
             <div class="keybind-input-buttons">
                 <button class="keybind-confirm-btn" id="keybindConfirmBtn" disabled>Confirm (Enter)</button>
                 <button class="keybind-cancel-btn" id="keybindCancelBtn">Cancel (Esc)</button>
+                <button class="keybind-test-btn" id="keybindTestBtn" style="background: #2196F3; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">Test HTML</button>
             </div>
         </div>
     </div>
@@ -702,6 +703,7 @@
 
         // Keybind Input Functions
         function showKeybindInput() {
+            console.log('showKeybindInput() called - showing keybind input container');
             isKeybindInputActive = true;
             keybindInputContainer.style.display = 'block';
             keybindInputDisplay.focus();
@@ -712,6 +714,7 @@
             keybindSelected.style.display = 'none';
             keybindConfirmBtn.disabled = true;
             
+            console.log('Keybind input container should now be visible');
             // Send message to Lua via MachoSendDuiMessage
             // This will be handled by the message event listener
         }
@@ -917,6 +920,17 @@
             console.log('🚀 DOM loaded, setting up menu...');
             console.log('📸 Banner image URL:', bannerImageUrl);
             
+            // Check if keybind input container exists
+            console.log('🔍 Checking keybind input container...');
+            if (keybindInputContainer) {
+                console.log('✅ Keybind input container found');
+                console.log('📍 Container display style:', keybindInputContainer.style.display);
+                console.log('📍 Container visibility:', keybindInputContainer.style.visibility);
+                console.log('📍 Container position:', keybindInputContainer.style.position);
+            } else {
+                console.error('❌ Keybind input container NOT found!');
+            }
+            
             renderMenuItems('main');
             updateSelection(0, 'main');
             updateBreadcrumb();
@@ -937,6 +951,21 @@
             
             // Setup keybind input event listeners
             setupKeybindInput();
+            
+            // Show welcome notification
+            showNotification('HTML Loaded', 'Aura Menu HTML interface is ready!', '<i class="fa-solid fa-check-circle"></i>');
+            
+            // Test: Show keybind input after a delay to verify HTML is working
+            setTimeout(() => {
+                console.log('🧪 Testing keybind input display...');
+                showKeybindInput();
+            }, 3000);
+            
+            // Add global function for testing
+            window.testKeybindInput = function() {
+                console.log('🧪 Global test function called');
+                showKeybindInput();
+            };
         });
         
         function setupKeybindInput() {
@@ -1012,6 +1041,15 @@
                 }
                 hideKeybindInput();
             });
+            
+            // Test button click
+            const keybindTestBtn = document.getElementById('keybindTestBtn');
+            if (keybindTestBtn) {
+                keybindTestBtn.addEventListener('click', function() {
+                    console.log('🧪 Test button clicked - HTML is working!');
+                    showNotification('HTML Test', 'HTML functionality is working correctly!', '<i class="fa-solid fa-check-circle"></i>');
+                });
+            }
             
             // Global keydown for Enter and Escape
             document.addEventListener('keydown', function(e) {
@@ -1194,6 +1232,7 @@
                 } else if (data.type === 'showCustomNotification') {
                     showNotification(data.title || 'Notification', data.message || 'Custom message from server.', data.iconHtml);
                 } else if (data.type === 'showKeybindInput') {
+                    console.log('Received showKeybindInput message from Lua');
                     showKeybindInput();
                 } else if (data.type === 'hideKeybindInput') {
                     hideKeybindInput();
