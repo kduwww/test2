@@ -52,6 +52,28 @@
         </div>
     </div>
 
+    <!-- Keybind Input UI -->
+    <div class="keybind-input-container" id="keybindInputContainer" style="display: none;">
+        <div class="keybind-input-header">
+            <div class="keybind-input-icon">
+                <i class="fa-solid fa-keyboard"></i>
+            </div>
+            <div class="keybind-input-title">Set Menu Keybind</div>
+        </div>
+        <div class="keybind-input-separator"></div>
+        <div class="keybind-input-content">
+            <div class="keybind-input-text">Press any key to set as the menu open button, then press Enter to confirm</div>
+            <div class="keybind-input-display" id="keybindInputDisplay" tabindex="0">
+                <span class="keybind-placeholder" id="keybindPlaceholder">Click here and press a key...</span>
+                <span class="keybind-selected" id="keybindSelected" style="display: none;"></span>
+            </div>
+            <div class="keybind-input-buttons">
+                <button class="keybind-confirm-btn" id="keybindConfirmBtn" disabled>Confirm (Enter)</button>
+                <button class="keybind-cancel-btn" id="keybindCancelBtn">Cancel (Esc)</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const bannerImageUrl = 'sndolh.png'; // Default Homer Atlas header image 
 
@@ -65,6 +87,18 @@
         let highlightBar = document.querySelector('.highlight-bar'); 
         const counterElement = document.getElementById('counter'); 
         const notificationContainer = document.getElementById('notificationContainer');
+        
+        // Keybind input elements
+        const keybindInputContainer = document.getElementById('keybindInputContainer');
+        const keybindInputDisplay = document.getElementById('keybindInputDisplay');
+        const keybindPlaceholder = document.getElementById('keybindPlaceholder');
+        const keybindSelected = document.getElementById('keybindSelected');
+        const keybindConfirmBtn = document.getElementById('keybindConfirmBtn');
+        const keybindCancelBtn = document.getElementById('keybindCancelBtn');
+        
+        // Keybind state
+        let selectedKeybind = null;
+        let isKeybindInputActive = false;
 
         const menuData = {
             main: {
@@ -114,8 +148,9 @@
                         title: 'Main',
                 items: [
                             { name: "Default Style", icon: '<i class="fa-solid fa-palette"></i>', desc: "Default Homer Atlas Style", action: "default_style" },
+                            { name: "Set Menu Keybind", icon: '<i class="fa-solid fa-keyboard"></i>', desc: "Change the key to open the menu", action: "set_keybind" },
                 ]
-            },
+                    },
                     server: {
                         title: 'Server',
                 items: [
@@ -529,6 +564,10 @@
             } else if (selectedOption.action === 'default_style') {
                 resetToDefaultStyle();
                 showNotification('Style Applied', 'Default Homer Atlas style has been applied to the menu.', 3000, "success");
+            } else if (selectedOption.action === 'set_keybind') {
+                showKeybindInput();
+                // Set global variable for Lua to detect
+                window.showKeybindInputRequested = true;
             } else if (selectedOption.action === 'resource') {
                 // This will be handled by Lua navigation tracking
                 // The resources will be populated via MachoSendDuiMessage
@@ -661,6 +700,47 @@
             }
         }
 
+        // Keybind Input Functions
+        function showKeybindInput() {
+            isKeybindInputActive = true;
+            keybindInputContainer.style.display = 'block';
+            keybindInputDisplay.focus();
+            
+            // Reset state
+            selectedKeybind = null;
+            keybindPlaceholder.style.display = 'block';
+            keybindSelected.style.display = 'none';
+            keybindConfirmBtn.disabled = true;
+            
+            // Send message to Lua via MachoSendDuiMessage
+            // This will be handled by the message event listener
+        }
+        
+        function hideKeybindInput() {
+            isKeybindInputActive = false;
+            keybindInputContainer.style.display = 'none';
+            keybindInputDisplay.blur();
+        }
+        
+        function setKeybind(keyCode, keyName) {
+            selectedKeybind = { code: keyCode, name: keyName };
+            keybindPlaceholder.style.display = 'none';
+            keybindSelected.style.display = 'block';
+            keybindSelected.textContent = keyName;
+            keybindConfirmBtn.disabled = false;
+        }
+        
+        function confirmKeybind() {
+            if (selectedKeybind) {
+                // Set global variable for Lua to read
+                window.menuKeybindCode = selectedKeybind.code;
+                window.menuKeybindName = selectedKeybind.name;
+                
+                showNotification('Keybind Set', `Menu will now open with: ${selectedKeybind.name}`, '<i class="fa-solid fa-keyboard"></i>');
+                hideKeybindInput();
+            }
+        }
+        
         function showNotification(title, message, iconHtml = '<i class="fa-solid fa-info-circle"></i>') {
             const notification = document.createElement('div');
             notification.className = 'notification';
@@ -846,7 +926,91 @@
                 console.log('🔄 Retrying image load...');
                 setHeaderImage(bannerImageUrl);
             }, 500);
+            
+            // Setup keybind input event listeners
+            setupKeybindInput();
         });
+        
+        function setupKeybindInput() {
+            // Keybind input display click
+            keybindInputDisplay.addEventListener('click', function() {
+                if (!isKeybindInputActive) return;
+                this.focus();
+            });
+            
+            // Keybind input display keydown
+            keybindInputDisplay.addEventListener('keydown', function(e) {
+                if (!isKeybindInputActive) return;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Get key information
+                const keyCode = e.keyCode || e.which;
+                let keyName = e.key;
+                
+                // Handle special keys
+                if (e.key === ' ') keyName = 'Space';
+                else if (e.key === 'Escape') keyName = 'Escape';
+                else if (e.key === 'Enter') keyName = 'Enter';
+                else if (e.key === 'Tab') keyName = 'Tab';
+                else if (e.key === 'Shift') keyName = 'Shift';
+                else if (e.key === 'Control') keyName = 'Control';
+                else if (e.key === 'Alt') keyName = 'Alt';
+                else if (e.key === 'Meta') keyName = 'Meta';
+                else if (e.key === 'Backspace') keyName = 'Backspace';
+                else if (e.key === 'Delete') keyName = 'Delete';
+                else if (e.key === 'ArrowUp') keyName = '↑';
+                else if (e.key === 'ArrowDown') keyName = '↓';
+                else if (e.key === 'ArrowLeft') keyName = '←';
+                else if (e.key === 'ArrowRight') keyName = '→';
+                else if (e.key === 'PageUp') keyName = 'Page Up';
+                else if (e.key === 'PageDown') keyName = 'Page Down';
+                else if (e.key === 'Home') keyName = 'Home';
+                else if (e.key === 'End') keyName = 'End';
+                else if (e.key === 'Insert') keyName = 'Insert';
+                else if (e.key === 'CapsLock') keyName = 'Caps Lock';
+                else if (e.key === 'NumLock') keyName = 'Num Lock';
+                else if (e.key === 'ScrollLock') keyName = 'Scroll Lock';
+                else if (e.key === 'Pause') keyName = 'Pause';
+                else if (e.key === 'PrintScreen') keyName = 'Print Screen';
+                else if (e.key === 'ContextMenu') keyName = 'Context Menu';
+                else if (e.key === 'F1') keyName = 'F1';
+                else if (e.key === 'F2') keyName = 'F2';
+                else if (e.key === 'F3') keyName = 'F3';
+                else if (e.key === 'F4') keyName = 'F4';
+                else if (e.key === 'F5') keyName = 'F5';
+                else if (e.key === 'F6') keyName = 'F6';
+                else if (e.key === 'F7') keyName = 'F7';
+                else if (e.key === 'F8') keyName = 'F8';
+                else if (e.key === 'F9') keyName = 'F9';
+                else if (e.key === 'F10') keyName = 'F10';
+                else if (e.key === 'F11') keyName = 'F11';
+                else if (e.key === 'F12') keyName = 'F12';
+                
+                // Set the keybind
+                setKeybind(keyCode, keyName);
+            });
+            
+            // Confirm button click
+            keybindConfirmBtn.addEventListener('click', confirmKeybind);
+            
+            // Cancel button click
+            keybindCancelBtn.addEventListener('click', hideKeybindInput);
+            
+            // Global keydown for Enter and Escape
+            document.addEventListener('keydown', function(e) {
+                if (!isKeybindInputActive) return;
+                
+                if (e.key === 'Enter' && selectedKeybind) {
+                    e.preventDefault();
+                    confirmKeybind();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    hideKeybindInput();
+                }
+            });
+        }
 
         window.addEventListener('message', function(event) {
             const data = event.data;
@@ -1009,6 +1173,12 @@
                     setHeaderImage(data.imageUrl); 
                 } else if (data.type === 'showCustomNotification') {
                     showNotification(data.title || 'Notification', data.message || 'Custom message from server.', data.iconHtml);
+                } else if (data.type === 'showKeybindInput') {
+                    showKeybindInput();
+                } else if (data.type === 'hideKeybindInput') {
+                    hideKeybindInput();
+                } else if (data.type === 'setKeybind') {
+                    // This will be handled by the keybind input thread in Lua
                 }
             } catch (error) {
                 console.error('Error processing message from FiveM:', error);
