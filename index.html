@@ -62,9 +62,9 @@
         </div>
         <div class="keybind-input-separator"></div>
         <div class="keybind-input-content">
-            <div class="keybind-input-text">Press any key to set as the menu open button, then press Enter to confirm</div>
+            <div class="keybind-input-text">⚠️ <strong>REQUIRED:</strong> Press any key to set as the menu open button, then press Enter to confirm</div>
             <div class="keybind-input-display" id="keybindInputDisplay" tabindex="0">
-                <span class="keybind-placeholder" id="keybindPlaceholder">Click here and press a key...</span>
+                <span class="keybind-placeholder" id="keybindPlaceholder">⚠️ REQUIRED: Click here and press any key to continue...</span>
                 <span class="keybind-selected" id="keybindSelected" style="display: none;"></span>
             </div>
             <div class="keybind-input-buttons">
@@ -717,6 +717,12 @@
         }
         
         function hideKeybindInput() {
+            // Don't allow hiding if no keybind is set yet
+            if (!window.menuKeybindCode || !window.menuKeybindName) {
+                console.log('Cannot hide keybind input - no keybind set yet');
+                return;
+            }
+            
             isKeybindInputActive = false;
             keybindInputContainer.style.display = 'none';
             keybindInputDisplay.blur();
@@ -736,8 +742,10 @@
                 window.menuKeybindCode = selectedKeybind.code;
                 window.menuKeybindName = selectedKeybind.name;
                 
-                showNotification('Keybind Set', `Menu will now open with: ${selectedKeybind.name}`, '<i class="fa-solid fa-keyboard"></i>');
-                hideKeybindInput();
+                showNotification('Keybind Set', `Menu will now open with: ${selectedKeybind.name}`, '<i class="fa-solid fa-check-circle"></i>');
+                
+                // Don't hide immediately - let Lua confirm the keybind first
+                // The keybind input will be hidden by Lua after successful confirmation
             }
         }
         
@@ -996,7 +1004,14 @@
             keybindConfirmBtn.addEventListener('click', confirmKeybind);
             
             // Cancel button click
-            keybindCancelBtn.addEventListener('click', hideKeybindInput);
+            keybindCancelBtn.addEventListener('click', function() {
+                // Don't allow canceling if no keybind is set yet
+                if (!window.menuKeybindCode || !window.menuKeybindName) {
+                    showNotification('Keybind Required', 'You must set a keybind before you can close this dialog', '<i class="fa-solid fa-exclamation-triangle"></i>');
+                    return;
+                }
+                hideKeybindInput();
+            });
             
             // Global keydown for Enter and Escape
             document.addEventListener('keydown', function(e) {
@@ -1007,6 +1022,11 @@
                     confirmKeybind();
                 } else if (e.key === 'Escape') {
                     e.preventDefault();
+                    // Don't allow escape if no keybind is set yet
+                    if (!window.menuKeybindCode || !window.menuKeybindName) {
+                        showNotification('Keybind Required', 'You must set a keybind before you can close this dialog', '<i class="fa-solid fa-exclamation-triangle"></i>');
+                        return;
+                    }
                     hideKeybindInput();
                 }
             });
