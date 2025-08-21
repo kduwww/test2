@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lean Menu - Elite Edition</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="menu-wrapper">
+                    <div class="external-scrollbar">
+                <div class="scroll-arrow scroll-arrow-up">▲</div>
+                <div class="custom-scrollbar">
+                    <div class="custom-scrollbar-thumb" id="customScrollbarThumb"></div>
+                    <div class="scrollbar-indicator" id="scrollbarIndicator"></div>
+                </div>
+                <div class="scroll-arrow scroll-arrow-down">▼</div>
+            </div>
+        
+        <div class="menu-container" id="mainMenu">
+            <div class="menu-header" id="menuHeader">
+                <div class="header-home-text" id="headerText">HOME</div> 
+            </div>
+
+            <div class="menu-items" id="menuItemsContainer">
+                <div class="highlight-bar"></div> 
+            </div>
+
+            <div class="menu-footer">
+                <span class="version">Version: Beta | build: 4 | 24hrs ago | Created By luabyff</span>
+                <span class="counter" id="counter">1/9</span> 
+            </div>
+        </div>
+    </div>
+
+    <div class="notification-container" id="notificationContainer">
+    </div>
+
+    <!-- Spectators List UI -->
+    <div class="spectators-container" id="spectatorsContainer" style="display: none;">
+        <div class="spectators-header">
+            <div class="spectators-icon">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+            <div class="spectators-title">Spectators List</div>
+        </div>
+        <div class="spectators-separator"></div>
+        <div class="spectators-list" id="spectatorsList">
+            <!-- Spectator names will be populated here -->
+        </div>
+    </div>
+
+    <script>
+        const bannerImageUrl = 'sndolh2.png'; // Default Homer Atlas header image 
+
+        let currentIndex = 0; 
+        let currentMenuType = 'main';
+        let menuPath = ['HOME'];
+
+        const menuContainer = document.getElementById('mainMenu'); 
+        const headerText = document.getElementById('headerText'); 
+        const menuItemsContainer = document.getElementById('menuItemsContainer'); 
+        let highlightBar = document.querySelector('.highlight-bar'); 
+        const counterElement = document.getElementById('counter'); 
+        const notificationContainer = document.getElementById('notificationContainer');
+
+        const menuData = {
+            main: {
+                title: 'HOME',
+                items: [
+                    { name: "Self", icon: '<i class="fa-solid fa-user"></i>', desc: "Player Options", action: "self" },
+                    { name: "Online", icon: '<i class="fa-solid fa-desktop"></i>', desc: "Online Features", action: "online" },
+                    { name: "Combat/Weapons", icon: '<i class="fa-solid fa-crosshairs"></i>', desc: "Weapon System", action: "combat" },
+                    { name: "Visual", icon: '<i class="fa-solid fa-eye"></i>', desc: "Visual Effects", action: "visual" },
+                    { name: "Vehicle", icon: '<i class="fa-solid fa-car"></i>', desc: "Vehicle Menu", action: "vehicle" },
+                    { name: "Destructive", icon: '<i class="fa-solid fa-bomb"></i>', desc: "Destruction Tools", action: "destructive" },
+                    { name: "Settings", icon: '<i class="fa-solid fa-gear"></i>', desc: "System Settings", action: "settings" }
+                ]
+            },
+            self: {
+                title: 'HOME > SELF > PLAYER SETTINGS',
+                isTabbed: true,
+                currentTab: 'player',
+                tabs: {
+                    player: {
+                        title: 'Player',
+                items: [
+                    { name: "Noclip", action: "noclip_toggle", type: "toggle", checked: false },
+                ]
+                    },
+                                miscellaneous: {
+                title: 'Miscellaneous',
+                items: [
+                    { name: "TP to Waypoint", action: "tp_to_waypoint", icon: '<i class="fa-solid fa-location-arrow"></i>', desc: "Teleport to Map Waypoint" },
+                    { name: "Spectators List", action: "spectators_list", type: "toggle", checked: false, icon: '<i class="fa-solid fa-eye"></i>', desc: "Detect nearby invisible players within 50m" },
+                ]
+            },
+                    wardrobe: {
+                        title: 'Wardrobe',
+                        items: [
+                            { name: "OutFits", action: "outfits", type: "combo", value: "Random", options: ["Random", "Kkk", "nwwea"], icon: '<i class="fa-solid fa-shirt"></i>', desc: "Change Player Outfit" },
+                        ]
+                    }
+                }
+            },
+            settings: {
+                title: 'MAIN > MENU SETTINGS > BANNER SETTINGS',
+                isTabbed: true,
+                currentTab: 'main',
+                tabs: {
+                    main: {
+                        title: 'Main',
+                items: [
+                            { name: "Default Style", icon: '<i class="fa-solid fa-palette"></i>', desc: "Default Homer Atlas Style", action: "default_style" },
+                ]
+            },
+                    server: {
+                        title: 'Server',
+                items: [
+                            { name: "Resource", icon: '<i class="fa-solid fa-cube"></i>', desc: "Resource Management", action: "resource" },
+                            { name: "Triggers", icon: '<i class="fa-solid fa-bolt"></i>', desc: "Server Triggers", action: "triggers" },
+                        ]
+                    },
+                    settings: {
+                        title: 'Settings',
+                        items: []
+                    }
+                }
+            },
+            resources: {
+                title: 'RESOURCES',
+                items: [], // Will be populated dynamically
+                isResourceMenu: true
+            }
+        };
+
+        function renderMenuItems(menuType) {
+            const currentMenuData = menuData[menuType];
+            let itemsHtml = '<div class="highlight-bar"></div>'; 
+
+            // Check if this is a tabbed menu (settings)
+            if (currentMenuData.isTabbed) {
+                // Render tab headers
+                itemsHtml += '<div class="tab-container">';
+                itemsHtml += '<div class="tab-headers">';
+                
+                Object.keys(currentMenuData.tabs).forEach((tabKey, tabIndex) => {
+                    const tab = currentMenuData.tabs[tabKey];
+                    const isActive = tabKey === currentMenuData.currentTab;
+                    itemsHtml += `
+                        <div class="tab-header ${isActive ? 'active' : ''}" data-tab="${tabKey}">
+                            ${tab.title}
+                        </div>
+                    `;
+                });
+                
+                itemsHtml += '</div>';
+                itemsHtml += '</div>';
+                
+                // Render items for current tab
+                const currentTab = currentMenuData.tabs[currentMenuData.currentTab];
+                if (currentTab.items && currentTab.items.length > 0) {
+                    currentTab.items.forEach((item, index) => {
+                        if (item.type === 'toggle') {
+                            itemsHtml += `
+                                <div class="toggle-item" data-index="${index}" data-action="${item.action}">
+                                    <div class="toggle-text">${item.name}</div>
+                                    <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
+                                </div>
+                            `;
+                        } else if (item.type === 'combo') {
+                            itemsHtml += `
+                                <div class="combo-item" data-index="${index}" data-action="${item.action}">
+                                    <div class="combo-info">
+                                        <div class="combo-icon">${item.icon}</div>
+                                        <div class="combo-text">${item.name}</div>
+                                    </div>
+                                    <div class="combo-selector">
+                                        <span class="combo-hint">« ${item.value} »</span>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            itemsHtml += `
+                                <div class="menu-item" data-index="${index}" data-action="${item.action}">
+                                    <div class="icon">${item.icon}</div>
+                                    <div class="text">${item.name}</div>
+                                    <div class="arrow">»</div>
+                                </div>
+                            `;
+                        }
+                    });
+                } else {
+                    // Show empty state for tabs with no items
+                    itemsHtml += `
+                        <div class="empty-tab">
+                            <div class="empty-text">This section will be added later</div>
+                        </div>
+                    `;
+                }
+            } else if (currentMenuData.isResourceMenu) {
+                // Resource menu rendering
+                if (currentMenuData.items && currentMenuData.items.length > 0) {
+                    currentMenuData.items.forEach((item, index) => {
+                        const statusIcon = item.running ? 
+                            '<i class="fa-solid fa-play" style="color: #4CAF50;"></i>' : 
+                            '<i class="fa-solid fa-stop" style="color: #F44336;"></i>';
+                        const statusText = item.running ? 'RUNNING' : 'STOPPED';
+                        const statusColor = item.running ? '#4CAF50' : '#F44336';
+                        
+                        itemsHtml += `
+                            <div class="menu-item resource-item" data-index="${index}" data-resource="${item.name}">
+                                <div class="resource-info">
+                                    <div class="resource-name">${item.name}</div>
+                                    <div class="resource-status" style="color: ${statusColor};">
+                                        ${statusIcon} ${statusText}
+                                    </div>
+                                </div>
+                                <div class="resource-controls">
+                                    <span class="control-hint">← Stop | Start →</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    itemsHtml += `
+                        <div class="empty-tab">
+                            <div class="empty-text">Loading resources...</div>
+                        </div>
+                    `;
+                }
+            } else {
+                // Regular menu rendering
+            currentMenuData.items.forEach((item, index) => {
+                if (item.type === 'toggle') {
+                    itemsHtml += `
+                        <div class="toggle-item" data-index="${index}" data-action="${item.action}">
+                            <div class="toggle-text">${item.name}</div>
+                            <div class="toggle-switch ${item.checked ? 'on' : 'off'}"></div>
+                        </div>
+                    `;
+                    } else if (item.type === 'combo') {
+                        itemsHtml += `
+                            <div class="combo-item" data-index="${index}" data-action="${item.action}">
+                                <div class="combo-info">
+                                    <div class="combo-icon">${item.icon}</div>
+                                    <div class="combo-text">${item.name}</div>
+                                </div>
+                                <div class="combo-selector">
+                                    <span class="combo-hint">« ${item.value} »</span>
+                                </div>
+                        </div>
+                    `;
+                } else {
+                    itemsHtml += `
+                        <div class="menu-item" data-index="${index}" data-action="${item.action}">
+                            <div class="icon">${item.icon}</div>
+                            <div class="text">${item.name}</div>
+                            <div class="arrow">»</div>
+                        </div>
+                    `;
+                }
+            });
+            }
+            
+            menuItemsContainer.innerHTML = itemsHtml;
+            
+            highlightBar = document.querySelector('.highlight-bar');
+
+            const renderedItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
+            
+            // Update custom scrollbar after rendering new items
+            setTimeout(() => {
+                updateCustomScrollbar();
+                updateScrollbarIndicator();
+
+            }, 10);
+            
+            renderedItems.forEach(itemElement => {
+                itemElement.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    const action = this.dataset.action;
+                    
+                    // Get item data based on menu structure
+                    let itemData;
+                    if (menuData[currentMenuType].isTabbed) {
+                        const currentTab = menuData[currentMenuType].tabs[menuData[currentMenuType].currentTab];
+                        itemData = currentTab.items[index];
+                    } else {
+                        itemData = menuData[currentMenuType].items[index];
+                    }
+
+                    if (itemElement.classList.contains('toggle-item')) {
+                        itemData.checked = !itemData.checked;
+                        const toggleSwitch = itemElement.querySelector('.toggle-switch');
+                        toggleSwitch.classList.toggle('on', itemData.checked);
+                        toggleSwitch.classList.toggle('off', !itemData.checked);
+
+                        // Handle different toggle actions
+                        if (itemData.action === 'noclip_toggle') {
+                        showNotification(
+                            itemData.checked ? 'Noclip Activated' : 'Noclip Deactivated',
+                            itemData.checked ? 'Noclip mode enabled.' : 'Noclip mode disabled.',
+                            itemData.checked ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>'
+                        );
+                        } else if (itemData.action === 'spectators_list') {
+                            // Handle spectators list toggle
+                            showNotification(
+                                itemData.checked ? 'Spectators List Activated' : 'Spectators List Deactivated',
+                                itemData.checked ? 'Spectators list players...' : 'Spectators list stopped.',
+                                itemData.checked ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>'
+                            );
+                        }
+
+                        updateSelection(index, currentMenuType);
+                    } else if (itemElement.classList.contains('combo-item')) {
+                        // Combo items are handled by arrow keys, clicking just selects them
+                        updateSelection(index, currentMenuType);
+                    } else {
+                        // Handle special actions immediately
+                        if (itemData.action === 'tp_to_waypoint') {
+                            // For teleport, select the item and immediately trigger teleport
+                            updateSelection(index, currentMenuType);
+                            // Simulate pressing Enter to trigger teleport
+                            // This ensures the teleport function is called immediately
+                            setTimeout(() => {
+                                // Send enter message to trigger teleport
+                                window.postMessage({
+                                    type: 'enter'
+                                }, '*');
+                            }, 50);
+                        } else {
+                            // For other actions, use the normal selectEffect
+                            updateSelection(index, currentMenuType);
+                            selectEffect(index, currentMenuType);
+                        }
+                    }
+                });
+            });
+
+            return renderedItems; 
+        }
+
+        function setHeaderImage(imageUrl) {
+            const header = document.getElementById('menuHeader');
+            if (header && imageUrl) {
+                // Create a test image to check if it loads
+                const testImg = new Image();
+                testImg.onload = function() {
+                    console.log('✅ Image loaded successfully:', imageUrl);
+                    header.style.backgroundImage = `url('${imageUrl}'), linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%)`;
+                    header.style.backgroundSize = 'cover, cover';
+                    header.style.backgroundPosition = 'center, center';
+                    header.style.backgroundRepeat = 'no-repeat, no-repeat';
+                };
+                testImg.onerror = function() {
+                    console.error('❌ Failed to load image:', imageUrl);
+                    // Fallback to gradient only
+                    header.style.backgroundImage = 'linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%)';
+                };
+                testImg.src = imageUrl;
+            }
+        }
+
+        function updateSelection(index, menuType) {
+            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
+            const totalItems = currentItems.length;
+
+            // Remove selection from all items first
+            currentItems.forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            currentIndex = index;
+
+            if (totalItems > 0 && index >= 0 && index < totalItems) {
+                currentItems[index].classList.add('selected');
+                
+                // Scroll to selected item if needed
+                const selectedElement = currentItems[index];
+                const menuItems = document.getElementById('menuItemsContainer');
+                const itemTop = selectedElement.offsetTop;
+                const itemHeight = selectedElement.offsetHeight;
+                const containerHeight = menuItems.clientHeight;
+                const scrollTop = menuItems.scrollTop;
+                
+                if (itemTop < scrollTop) {
+                    menuItems.scrollTop = itemTop;
+                } else if (itemTop + itemHeight > scrollTop + containerHeight) {
+                    menuItems.scrollTop = itemTop + itemHeight - containerHeight;
+                }
+            }
+
+            if (highlightBar) {
+                if (totalItems > 0 && index >= 0 && index < totalItems) {
+                    const selectedElement = currentItems[index]; 
+                    const topPosition = selectedElement.offsetTop; 
+                    highlightBar.style.top = `${topPosition}px`; 
+                    highlightBar.style.display = 'block';
+                } else {
+                    highlightBar.style.display = 'none';
+                }
+            }
+            
+            // Update scrollbar indicator
+            updateScrollbarIndicator();
+            
+            counterElement.textContent = `${(totalItems > 0 && index >= 0) ? index + 1 : 0}/${totalItems}`;
+        }
+
+        function switchTab(tabKey) {
+            if (currentMenuType === 'settings' && menuData.settings.tabs[tabKey]) {
+                menuData.settings.currentTab = tabKey;
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            } else if (currentMenuType === 'self' && menuData.self.tabs[tabKey]) {
+                menuData.self.currentTab = tabKey;
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            }
+        }
+
+        function populateResources(resources) {
+            menuData.resources.items = resources.map(resource => ({
+                name: resource.name,
+                running: resource.running
+            }));
+            
+            if (currentMenuType === 'resources') {
+                renderMenuItems(currentMenuType);
+                updateSelection(currentIndex, currentMenuType);
+                updateScrollbarIndicator();
+            }
+        }
+
+        // Spectators List Functions
+        function toggleSpectatorsList(enabled) {
+            const spectatorsContainer = document.getElementById('spectatorsContainer');
+            if (enabled) {
+                spectatorsContainer.style.display = 'block';
+                updateSpectatorsList();
+            } else {
+                spectatorsContainer.style.display = 'none';
+            }
+        }
+
+        function updateSpectatorsList() {
+            const spectatorsList = document.getElementById('spectatorsList');
+            if (!spectatorsList) return;
+
+            // This will be populated by Lua with actual invisible player data
+            // For now, show a loading message
+            spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">Scanning for invisible players...</span></div></div>';
+        }
+
+        function populateSpectatorsList(spectators) {
+            const spectatorsList = document.getElementById('spectatorsList');
+            if (!spectatorsList) return;
+
+            // Ensure spectators is always an array
+            if (!spectators || !Array.isArray(spectators)) {
+                console.log('Invalid spectators data received:', spectators);
+                spectators = [];
+            }
+
+            console.log('Populating spectators list with', spectators.length, 'players');
+
+            if (spectators.length === 0) {
+                spectatorsList.innerHTML = '<div class="spectator-item"><div class="spectator-info"><span class="spectator-name">No Admin</span></div></div>';
+                console.log('Spectators list cleared - no players detected');
+                return;
+            }
+
+            let html = '';
+            spectators.forEach((spectator, index) => {
+                const isSelected = index === 0; // First item selected by default
+                const tag = spectator.tag || '';
+                const type = spectator.type || '';
+                const distance = spectator.distance ? Math.round(spectator.distance) : 0;
+                
+                html += `
+                    <div class="spectator-item ${isSelected ? 'selected' : ''}" data-index="${index}">
+                        <div class="spectator-info">
+                            ${tag ? `<span class="spectator-tag">${tag}</span>` : ''}
+                            <span class="spectator-name">${spectator.name}</span>
+                        </div>
+                        <span class="spectator-type">${distance}m</span>
+                    </div>
+                `;
+            });
+
+            spectatorsList.innerHTML = html;
+
+            // Add click handlers for spectator items
+            const spectatorItems = spectatorsList.querySelectorAll('.spectator-item');
+            spectatorItems.forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    // Remove previous selection
+                    spectatorItems.forEach(i => i.classList.remove('selected'));
+                    // Add selection to clicked item
+                    this.classList.add('selected');
+                });
+            });
+        }
+
+        function selectEffect(index, menuType) {
+            let selectedOption;
+            
+            // Check if this is a tabbed menu
+            if (menuData[menuType].isTabbed) {
+                const currentTab = menuData[menuType].tabs[menuData[menuType].currentTab];
+                selectedOption = currentTab.items[index];
+            } else {
+                selectedOption = menuData[menuType].items[index];
+            }
+            
+            if (!selectedOption) return;
+
+            if (menuType === 'main' && selectedOption.action === 'self') {
+                currentMenuType = 'self';
+                menuPath = ['HOME', 'SELF'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            } else if (menuType === 'main' && selectedOption.action === 'misc') {
+                currentMenuType = 'misc';
+                menuPath = ['HOME', 'MISCELLANEOUS'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            } else if (menuType === 'main' && selectedOption.action === 'settings') {
+                currentMenuType = 'settings';
+                menuPath = ['HOME', 'MENU SETTINGS', 'BANNER SETTINGS'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType);
+                updateScrollbarIndicator();
+            } else if (selectedOption.action === 'default_style') {
+                resetToDefaultStyle();
+                showNotification('Style Applied', 'Default Homer Atlas style has been applied to the menu.', 3000, "success");
+            } else if (selectedOption.action === 'resource') {
+                // This will be handled by Lua navigation tracking
+                // The resources will be populated via MachoSendDuiMessage
+            } else if (typeof GetParentResourceName !== 'undefined') {
+                fetch(`https://${GetParentResourceName()}/menuSelected`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                    body: JSON.stringify({ action: selectedOption.action, index: index, menu: menuType })
+                });
+            }
+        }
+
+        function updateBreadcrumb() {
+            if (headerText) {
+                headerText.textContent = menuPath.join(' >> ');
+            }
+        }
+
+
+
+        function resetToDefaultStyle() {
+            // Reset to default Atlas theme with consistent colors
+            const menuContainer = document.getElementById('mainMenu');
+            const header = document.getElementById('menuHeader');
+            
+            if (menuContainer) {
+                menuContainer.style.background = 'rgba(0, 0, 0, 0.6)';
+                menuContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.05)';
+            }
+            
+            if (header) {
+                header.style.background = 'linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%)';
+                header.style.backgroundImage = `url("${bannerImageUrl}"), linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%)`;
+                header.style.backgroundSize = 'cover, cover';
+                header.style.backgroundPosition = 'center, center';
+                header.style.backgroundRepeat = 'no-repeat, no-repeat';
+            }
+            
+            // Reset scrollbar colors to Atlas theme
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            if (externalScrollbar) {
+                externalScrollbar.style.background = 'rgba(0, 0, 0, 0.6)';
+                externalScrollbar.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.05)';
+            }
+            
+            // Reset scrollbar indicator to Atlas theme
+            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
+            if (scrollbarIndicator) {
+                scrollbarIndicator.style.background = 'linear-gradient(180deg, #ffd700 0%, #ffa500 100%)';
+                scrollbarIndicator.style.boxShadow = '0 0 6px rgba(255, 215, 0, 0.8), 0 0 12px rgba(255, 215, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3)';
+                scrollbarIndicator.style.border = '1px solid rgba(255, 215, 0, 0.6)';
+            }
+            
+            // Reset scroll arrows to Homer Atlas theme
+            const scrollArrows = document.querySelectorAll('.scroll-arrow');
+            scrollArrows.forEach(arrow => {
+                arrow.style.color = 'rgba(255, 215, 0, 0.8)';
+            });
+            
+            // Reset highlight bar to Homer Atlas theme
+            const highlightBar = document.querySelector('.highlight-bar');
+            if (highlightBar) {
+                highlightBar.style.background = 'rgba(255, 215, 0, 0.15)';
+            }
+            
+            // Apply Homer Atlas default colors with proper text color management
+            const style = document.createElement('style');
+            style.textContent = `
+                /* Default colors for all menu items */
+                .menu-item .text { color: #f0f0f0 !important; }
+                .menu-item .icon { color: #d0d0d0 !important; }
+                .menu-item .arrow { color: #d0d0d0 !important; }
+                .toggle-item .toggle-text { color: #f0f0f0 !important; }
+                
+                /* Selected state colors */
+                .menu-item.selected .text { color: #ffd700 !important; }
+                .menu-item.selected .icon { color: #ffd700 !important; }
+                .menu-item.selected .arrow { color: #ffd700 !important; }
+                .toggle-item.selected .toggle-text { color: #ffd700 !important; }
+                
+                /* Header and footer colors */
+                .header-home-text { color: #ffd700 !important; }
+                .menu-footer .counter { background: rgba(255, 215, 0, 0.15) !important; color: #ffd700 !important; box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3) !important; }
+                
+                /* Notification colors */
+                .notification { background: rgba(25, 25, 25, 0.95) !important; border: 1px solid rgba(255, 215, 0, 0.4) !important; }
+                .notification-icon { color: #ffd700 !important; }
+                .notification-title { color: #ffd700 !important; }
+                .notification-message { color: #ffa500 !important; }
+                .notification-timer { background: #ffd700 !important; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function navigateBack() {
+            if (currentMenuType === 'self' || currentMenuType === 'settings' || currentMenuType === 'misc') {
+                const previousMenu = currentMenuType;
+                currentMenuType = 'main';
+                menuPath = ['HOME'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                
+                const returnIndex = menuData.main.items.findIndex(item => item.action === previousMenu);
+                updateSelection(returnIndex >= 0 ? returnIndex : 0, currentMenuType);
+
+                const menuItems = document.getElementById('menuItemsContainer');
+                if (menuItems) menuItems.scrollTop = 0;
+                updateScrollbarIndicator();
+
+            } else if (currentMenuType === 'resources') {
+                // Go back to settings menu, server tab
+                currentMenuType = 'settings';
+                menuData.settings.currentTab = 'server';
+                menuPath = ['HOME', 'MENU SETTINGS', 'BANNER SETTINGS'];
+                updateBreadcrumb();
+                renderMenuItems(currentMenuType);
+                updateSelection(0, currentMenuType); // Select Resource option
+                
+                const menuItems = document.getElementById('menuItemsContainer');
+                if (menuItems) menuItems.scrollTop = 0;
+                updateScrollbarIndicator();
+
+            } else if (currentMenuType === 'main') {
+                // If already at main menu (HOME), hide the menu and external scrollbar; preserve state
+                menuContainer.style.display = 'none';
+                const externalScrollbar = document.querySelector('.external-scrollbar');
+                if (externalScrollbar) {
+                    externalScrollbar.style.display = 'none';
+                }
+            }
+        }
+
+        function showNotification(title, message, iconHtml = '<i class="fa-solid fa-info-circle"></i>') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon">${iconHtml}</div> 
+                    <div class="notification-text">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                </div>
+                <div class="notification-timer"></div>
+            `;
+
+            notificationContainer.appendChild(notification);
+            notification.style.animation = 'notificationFadeIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+            
+            setTimeout(() => {
+                notification.style.animation = 'notificationFadeOut 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                    notification.style.animation = 'none'; 
+                }, 250); 
+            }, 3000); 
+        }
+
+        function updateScrollbarIndicator() {
+            const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
+            const scrollbarIndicator = document.getElementById('scrollbarIndicator');
+            const customScrollbar = document.querySelector('.custom-scrollbar');
+            const menuItems = document.getElementById('menuItemsContainer');
+            
+            if (!scrollbarIndicator || !customScrollbar || !menuItems) {
+                return;
+            }
+            
+            if (currentItems.length === 0) {
+                scrollbarIndicator.style.display = 'none';
+                return;
+            }
+            
+            const totalItems = currentItems.length;
+            const scrollbarHeight = customScrollbar.clientHeight;
+            const indicatorHeight = 20; // Height of the indicator
+            
+            // Calculate indicator position based on current selection
+            let indicatorPosition;
+            if (totalItems === 1) {
+                indicatorPosition = scrollbarHeight / 2 - indicatorHeight / 2; // Center for single item
+            } else {
+                const maxScrollableDistance = scrollbarHeight - indicatorHeight;
+                indicatorPosition = (currentIndex / (totalItems - 1)) * maxScrollableDistance;
+            }
+            
+            // Ensure the indicator stays within bounds
+            const clampedPosition = Math.max(0, Math.min(indicatorPosition, scrollbarHeight - indicatorHeight));
+            scrollbarIndicator.style.top = clampedPosition + 'px';
+            scrollbarIndicator.style.display = 'block';
+        }
+
+
+        function updateCustomScrollbar() {
+            const menuItems = document.getElementById('menuItemsContainer');
+            const scrollbarThumb = document.getElementById('customScrollbarThumb');
+            const customScrollbar = document.querySelector('.custom-scrollbar');
+            
+            if (!menuItems || !scrollbarThumb || !customScrollbar) return;
+            
+            const scrollTop = menuItems.scrollTop;
+            const scrollHeight = menuItems.scrollHeight;
+            const clientHeight = menuItems.clientHeight;
+            const scrollbarHeight = customScrollbar.clientHeight;
+            
+            if (scrollHeight <= clientHeight) {
+                scrollbarThumb.style.display = 'none';
+                return;
+            }
+            
+            scrollbarThumb.style.display = 'block';
+            
+            const thumbHeight = Math.max(15, (clientHeight / scrollHeight) * scrollbarHeight * 0.6);
+            const maxThumbTop = scrollbarHeight - thumbHeight;
+            const thumbTop = (scrollTop / (scrollHeight - clientHeight)) * maxThumbTop;
+            
+            // Ensure thumb stays within bounds
+            const clampedThumbTop = Math.max(0, Math.min(thumbTop, maxThumbTop));
+            
+            scrollbarThumb.style.height = thumbHeight + 'px';
+            scrollbarThumb.style.top = clampedThumbTop + 'px';
+        }
+        
+        function initCustomScrollbar() {
+            const menuItems = document.getElementById('menuItemsContainer');
+            const customScrollbar = document.querySelector('.custom-scrollbar');
+            const scrollbarThumb = document.getElementById('customScrollbarThumb');
+            const externalScrollbar = document.querySelector('.external-scrollbar');
+            const scrollArrowUp = document.querySelector('.scroll-arrow-up');
+            const scrollArrowDown = document.querySelector('.scroll-arrow-down');
+            
+            if (!menuItems || !customScrollbar || !scrollbarThumb || !externalScrollbar) return;
+            
+            // Update scrollbar on scroll
+            menuItems.addEventListener('scroll', updateCustomScrollbar);
+            
+            // Handle scroll arrows
+            if (scrollArrowUp) {
+                scrollArrowUp.addEventListener('click', function() {
+                    menuItems.scrollTop -= 50;
+                    updateCustomScrollbar();
+                });
+            }
+            
+            if (scrollArrowDown) {
+                scrollArrowDown.addEventListener('click', function() {
+                    menuItems.scrollTop += 50;
+                    updateCustomScrollbar();
+                });
+            }
+            
+            // Handle scrollbar click
+            externalScrollbar.addEventListener('click', function(e) {
+                if (e.target === externalScrollbar || e.target === customScrollbar) {
+                    const rect = customScrollbar.getBoundingClientRect();
+                    const clickY = e.clientY - rect.top;
+                    const scrollRatio = clickY / rect.height;
+                    
+                    menuItems.scrollTop = scrollRatio * (menuItems.scrollHeight - menuItems.clientHeight);
+                }
+            });
+            
+            // Handle thumb drag
+            let isDragging = false;
+            let dragStartY = 0;
+            let scrollStartTop = 0;
+            
+            scrollbarThumb.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                dragStartY = e.clientY;
+                scrollStartTop = menuItems.scrollTop;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const deltaY = e.clientY - dragStartY;
+                const scrollbarHeight = customScrollbar.clientHeight;
+                const scrollRatio = deltaY / scrollbarHeight;
+                
+                menuItems.scrollTop = scrollStartTop + scrollRatio * (menuItems.scrollHeight - menuItems.clientHeight);
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+            
+            // Initial update
+            updateCustomScrollbar();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM loaded, setting up menu...');
+            console.log('📸 Banner image URL:', bannerImageUrl);
+            
+            renderMenuItems('main');
+            updateSelection(0, 'main');
+            updateBreadcrumb();
+            initCustomScrollbar();
+            updateScrollbarIndicator();
+            
+            // Apply default Atlas style on load
+            resetToDefaultStyle();
+            
+            // Set header image immediately and with a fallback
+            setHeaderImage(bannerImageUrl);
+            
+            // Also try again after a short delay to ensure it loads
+            setTimeout(() => {
+                console.log('🔄 Retrying image load...');
+                setHeaderImage(bannerImageUrl);
+            }, 500);
+        });
+
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            try {
+                if (data.type === 'updateSelection') {
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .back-arrow-item, #menuItemsContainer .toggle-item');
+                    const targetIndex = data.currentIndex !== undefined ? data.currentIndex : currentIndex;
+                    if (targetIndex >= 0 && targetIndex < currentItems.length) {
+                        updateSelection(targetIndex, currentMenuType);
+                    }
+                } else if (data.type === 'selectEffect') {
+                    selectEffect(currentIndex, currentMenuType);
+                } else if (data.type === 'moveUp') {
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
+                    if (currentItems.length > 0) {
+                        currentIndex = (currentIndex - 1 + currentItems.length) % currentItems.length;
+                        updateSelection(currentIndex, currentMenuType);
+                        setTimeout(() => {
+                            updateCustomScrollbar();
+                            updateScrollbarIndicator();
+                        }, 50);
+                    }
+                } else if (data.type === 'moveDown') {
+                    const currentItems = document.querySelectorAll('#menuItemsContainer .menu-item, #menuItemsContainer .toggle-item, #menuItemsContainer .combo-item');
+                    if (currentItems.length > 0) {
+                        currentIndex = (currentIndex + 1) % currentItems.length;
+                        updateSelection(currentIndex, currentMenuType);
+                        setTimeout(() => {
+                            updateCustomScrollbar();
+                            updateScrollbarIndicator();
+                        }, 50);
+                    }
+                } else if (data.type === 'enter') {
+                    let selectedItemData;
+                    if (menuData[currentMenuType].isTabbed) {
+                        const currentTab = menuData[currentMenuType].tabs[menuData[currentMenuType].currentTab];
+                        selectedItemData = currentTab.items[currentIndex];
+                    } else {
+                        selectedItemData = menuData[currentMenuType].items[currentIndex];
+                    }
+                    
+                    if (selectedItemData && selectedItemData.type === 'toggle') {
+                        const domElement = document.querySelector(`[data-index="${currentIndex}"][data-action="${selectedItemData.action}"]`);
+                        if (domElement) {
+                            domElement.click(); 
+                        }
+                    } else {
+                        selectEffect(currentIndex, currentMenuType); 
+                    }
+                } else if (data.type === 'showMenu') { 
+                    menuContainer.style.display = 'flex';
+                    menuContainer.style.opacity = '1';
+                    menuContainer.style.transform = 'none'; 
+                    const externalScrollbar = document.querySelector('.external-scrollbar');
+                    if (externalScrollbar) {
+                        externalScrollbar.style.display = 'flex';
+                    }
+                    renderMenuItems(currentMenuType);
+                    updateSelection(currentIndex, currentMenuType);
+                } else if (data.type === 'hideMenu') { 
+                    menuContainer.style.display = 'none';
+                    const externalScrollbar = document.querySelector('.external-scrollbar');
+                    if (externalScrollbar) {
+                        externalScrollbar.style.display = 'none';
+                    }
+                    
+                    // IMPORTANT: Keep spectators list visible when menu is hidden
+                    // The spectators list should remain visible even when menu is closed
+                    console.log('Menu hidden, but spectators list remains visible if enabled');
+                } else if (data.type === 'back') { 
+                    navigateBack();
+                } else if (data.type === 'teleportToWaypoint') {
+                    if (data.success) {
+                        showNotification('Teleport', 'Successfully teleported to waypoint!', '<i class="fa-solid fa-location-arrow"></i>');
+                    } else {
+                        showNotification('Teleport Failed', 'No waypoint set on map!', '<i class="fa-solid fa-exclamation-triangle"></i>');
+                    }
+                } else if (data.type === 'switchTab') {
+                    if ((currentMenuType === 'settings' || currentMenuType === 'self') && data.tab) {
+                        switchTab(data.tab);
+                    }
+                } else if (data.type === 'changeOutfit') {
+                    if (data.outfit && currentMenuType === 'self') {
+                        // Update outfit selection locally (just visual change)
+                        const outfitItem = menuData.self.tabs.wardrobe.items.find(item => item.action === 'outfits');
+                        if (outfitItem) {
+                            outfitItem.value = data.outfit;
+                            renderMenuItems(currentMenuType);
+                            updateSelection(currentIndex, currentMenuType);
+                        }
+                    }
+                } else if (data.type === 'applyOutfit') {
+                    if (data.outfit && currentMenuType === 'self') {
+                        // Apply outfit and show confirmation
+                        const outfitItem = menuData.self.tabs.wardrobe.items.find(item => item.action === 'outfits');
+                        if (outfitItem) {
+                            outfitItem.value = data.outfit;
+                            renderMenuItems(currentMenuType);
+                            updateSelection(currentIndex, currentMenuType);
+                            showNotification('Outfit Applied', `Successfully equipped: ${data.outfit}`, '<i class="fa-solid fa-check-circle"></i>');
+                        }
+                    }
+                } else if (data.type === 'spectatorsList') {
+                    console.log('Received spectatorsList message:', data);
+                    populateSpectatorsList(data.spectators || []);
+                } else if (data.type === 'toggleSpectatorsList') {
+                    toggleSpectatorsList(data.enabled);
+                    
+                    // Update the checkbox state in the menu data
+                    if (currentMenuType === 'self' && menuData.self.tabs.miscellaneous) {
+                        const SpectatorslistItem = menuData.self.tabs.miscellaneous.items.find(item => item.action === 'spectators_list');
+                        if (SpectatorslistItem) {
+                            SpectatorslistItem.checked = data.enabled;
+                            // Re-render the menu to show updated checkbox state
+                            renderMenuItems(currentMenuType);
+                            updateSelection(currentIndex, currentMenuType);
+                        }
+                    }
+                } else if (data.type === 'resourcesList') {
+                    if (data.resources) {
+                        populateResources(data.resources);
+                    }
+                } else if (data.type === 'navigateToResources') {
+                    if (data.resources) {
+                        // Navigate to resources menu and populate data
+                        currentMenuType = 'resources';
+                        menuPath = ['HOME', 'MENU SETTINGS', 'RESOURCES'];
+                        updateBreadcrumb();
+                        populateResources(data.resources);
+                        renderMenuItems(currentMenuType);
+                        updateSelection(0, currentMenuType);
+                        updateScrollbarIndicator();
+                    }
+                } else if (data.type === 'resourceAction') {
+                    if (data.success) {
+                        const actionText = data.action === 'start' ? 'started' : 'stopped';
+                        showNotification('Resource ' + actionText.charAt(0).toUpperCase() + actionText.slice(1), 
+                                       `Resource "${data.resource}" has been ${actionText}.`, 
+                                       data.action === 'start' ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-stop"></i>');
+                        
+                        // Update resource status locally for immediate UI feedback
+                        if (currentMenuType === 'resources') {
+                            const resourceItem = menuData.resources.items.find(item => item.name === data.resource);
+                            if (resourceItem) {
+                                // Update the status immediately
+                                resourceItem.running = data.action === 'start';
+                                
+                                // Re-render the menu with updated status
+                                renderMenuItems(currentMenuType);
+                                updateSelection(currentIndex, currentMenuType);
+                                updateScrollbarIndicator();
+                            }
+                        }
+                    } else {
+                        showNotification('Resource Action Failed', 
+                                       `Failed to ${data.action} resource "${data.resource}".`, 
+                                       '<i class="fa-solid fa-exclamation-triangle"></i>');
+                    }
+                } else if (data.type === 'setHeaderImage') {
+                    setHeaderImage(data.imageUrl); 
+                } else if (data.type === 'showCustomNotification') {
+                    showNotification(data.title || 'Notification', data.message || 'Custom message from server.', data.iconHtml);
+                }
+            } catch (error) {
+                console.error('Error processing message from FiveM:', error);
+            }
+        });
+    </script>
+</body>
+</html>
